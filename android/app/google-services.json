@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "594993990605",
+    "firebase_url": "https://a-yo-2d62f-default-rtdb.firebaseio.com",
+    "project_id": "a-yo-2d62f",
+    "storage_bucket": "a-yo-2d62f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:594993990605:android:64d918cec0e2852e349284",
+        "android_client_info": {
+          "package_name": "com.ayo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "594993990605-rull88i4fmre1b4ar120i815lo8fijom.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNKmC79XIgMS-WVXWC5Xvf19n6pl48m94"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "594993990605-rull88i4fmre1b4ar120i815lo8fijom.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "594993990605-e1p4k1e7bkir57i4fjtqio7ngt76pmvb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ayo"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
