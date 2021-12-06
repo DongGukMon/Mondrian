@@ -10,10 +10,13 @@
         },
         body: JSON.stringify({
           "to": target,
-          "data":{"imageUrl": 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/KakaoTalk_logo.svg/600px-KakaoTalk_logo.svg.png'},
-          "notification": {
+          "data":{
+            "imageUrl": 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/KakaoTalk_logo.svg/600px-KakaoTalk_logo.svg.png',
             "title": "A-YO",
             "body": "새로운 친구 요청이 왔습니다"
+          },
+          "notification":{
+            content_available: true,
           },
           "priority":"high"
         })
@@ -32,11 +35,12 @@
       body: JSON.stringify({
         "to": target,
         "data":{
-          "imageUrl": 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/KakaoTalk_logo.svg/600px-KakaoTalk_logo.svg.png'
-        },
-        "notification": {
+          "imageUrl": 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/KakaoTalk_logo.svg/600px-KakaoTalk_logo.svg.png',
           "title": "A-YO",
           "body": name+": "+purpose.body
+        },
+        "notification":{
+          content_available: true,
         },
         "priority":"high"
       })

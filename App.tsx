@@ -14,6 +14,15 @@ import PushNotificationIOS from "@react-native-community/push-notification-ios";
 import PushNotification from "react-native-push-notification";
 import messaging from '@react-native-firebase/messaging';
 
+
+messaging().setBackgroundMessageHandler(async (remoteMessage:any) => {
+  console.log("hoi")
+  // Platform.OS === 'ios' ? PushNotification.localNotification({title:"hi",message:"hello",soundName: 'default'}) :
+  PushNotification.localNotification({channelId:"channel-id",title:remoteMessage.data?.title,message:remoteMessage.data?.body,largeIconUrl:remoteMessage.data.imageUrl, picture:remoteMessage.data.imageUrl})
+});
+
+AppRegistry.registerComponent('app', () => App);
+
 async function requestUserPermission() {
   const authStatus = await messaging().requestPermission();
   const enabled =
@@ -33,13 +42,6 @@ PushNotification.createChannel(
   },
   (created) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
 );
-
-messaging().setBackgroundMessageHandler(async (remoteMessage:any) => {
-  Platform.OS === 'ios' ? PushNotificationIOS.presentLocalNotification({alertTitle:remoteMessage.notification?.title,alertBody:remoteMessage.notification?.body,picture:remoteMessage.data.imageUrl,isSilent:false}) :
-  PushNotification.localNotification({channelId:"channel-id",title:remoteMessage.notification?.title,message:remoteMessage.notification?.body,largeIconUrl:remoteMessage.data.imageUrl})
-});
-
-AppRegistry.registerComponent('app', () => App);
 
 
 firebaseInit()
@@ -85,13 +87,14 @@ const App = () => {
   useEffect(() => {
     checkIfLoggedIn()
     requestUserPermission()
+
   },[])
 
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async (remoteMessage:any) => {
-      // Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-      Platform.OS === 'ios' ? PushNotification.localNotification({title:remoteMessage.notification?.title,message:remoteMessage.notification?.body,picture:remoteMessage.data.imageUrl}) :
-      PushNotification.localNotification({channelId:"channel-id",title:remoteMessage.notification?.title,message:remoteMessage.notification?.body,largeIconUrl:remoteMessage.data.imageUrl})
+      console.log("hi")
+      // Platform.OS === 'ios' ? PushNotification.localNotification({title:remoteMessage.data?.title,message:remoteMessage.data?.body,picture:remoteMessage.data.imageUrl}) :
+      PushNotification.localNotification({channelId:"channel-id",title:remoteMessage.data?.title,message:remoteMessage.data?.body,largeIconUrl:remoteMessage.data.imageUrl,picture:remoteMessage.data.imageUrl})
     });
 
     return unsubscribe;

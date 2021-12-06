@@ -198,6 +198,13 @@ android {
 }
 
 dependencies {
+    // implementation 'androidx.core:core-ktx:1.7.0-alpha01'
+    // def work_version = "2.6.0"
+    // // Force WorkManager 2.6.0 for transitive dependency
+    // implementation("androidx.work:work-runtime-ktx:$work_version") {
+    //     force = true
+    // }
+
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
