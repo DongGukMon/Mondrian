@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from 'react';
-import {SafeAreaView, StyleSheet, Alert} from 'react-native';
+import {SafeAreaView, StyleSheet, Alert, Platform, AppRegistry} from 'react-native';
 import MyStack from './screen/navContainer/MyStack';
 import Signin from './screen/Signin';
 import InputNumber from './screen/InputNumber';
@@ -15,50 +15,38 @@ import PushNotification from "react-native-push-notification";
 import messaging from '@react-native-firebase/messaging';
 
 async function requestUserPermission() {
-  const authorizationStatus = await messaging().requestPermission();
+  const authStatus = await messaging().requestPermission();
+  const enabled =
+    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
-  if (authorizationStatus) {
-    console.log('Permission status:', authorizationStatus);
+  if (enabled) {
+    console.log('Authorization status:', authStatus);
   }
 }
 
-// Must be outside of any component LifeCycle (such as `componentDidMount`).
-PushNotification.configure({onRegister: function (token:any) {
-  // console.log("TOKEN:", token);
+PushNotification.createChannel(
+  {
+    channelId: "channel-id", // (required)
+    channelName: "My channel", // (required)
    
-    // fetch('https://fcm.googleapis.com/fcm/send', {
-    //   method: 'POST',
-    //   headers: {
-    //     "Accept": 'application/json',
-    //     'Content-Type': 'application/json',
-    //     "Authorization": 'key='+`AAAAiohny80:APA91bH_71VhDRhTbJaI40rGhCyxejmUrpIw5FKB2-Om66_q_OojMzgLkuVTuse-9bGWHELcqloWIJd6dblE1knxieMlTF2JrScSqLotOPWVurK64UBoX5jfGS1Az2-ybNOojInNlBQc`,
-    //   },
-    //   body: JSON.stringify({
-    //     "to": 
-    //     // "ehVKtxSIaEGKgyZiGh8ZGG:APA91bHj3gGhNbubaIBAZeP9PjXesiQrWA1fwaW82YVrKiT1shwRM_nHnh8sLHBLEBvn0BKMNls-bRuenajjV5m1aVk8NojwekATE5PYOOb33kjAUJ9z5Ez1wySBicjq78-Go3DalBJV", 
-    //     "dIVEa_2_TZihOxDgLQhYoo:APA91bHWYqypO1Gw20xGqgtcBWpbYzLup5-AlE82dGvsyYa-Y8DJxV3Z-4GTu_6OpPwRXpmBCEp4jj_HqR_8Zxo1loLMSG_deupYy6AmB6lFtThpAPUaz44JXCLWnY-I-_eJbN_lCzMV",
-    
-    //     "notification": {
-    //       "title": "test",
-    //       "body": "New Story available."
-    //     },
-    //     "priority":"high"
-    //   })
-    //   }).then(res=>console.log(res))
+  },
+  (created) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
+);
 
-},   onRegistrationError: function(err) {
-  console.error(err.message, err);
-},
+messaging().setBackgroundMessageHandler(async (remoteMessage:any) => {
+  Platform.OS === 'ios' ? PushNotificationIOS.presentLocalNotification({alertTitle:remoteMessage.notification?.title,alertBody:remoteMessage.notification?.body,picture:remoteMessage.data.imageUrl,isSilent:false}) :
+  PushNotification.localNotification({channelId:"channel-id",title:remoteMessage.notification?.title,message:remoteMessage.notification?.body,largeIconUrl:remoteMessage.data.imageUrl})
+});
 
-})
-  
+AppRegistry.registerComponent('app', () => App);
 
 
 firebaseInit()
 
 const App = () => {
 
-  const [userId, setUserId] = useState("")
+  const [info, setInfo] = useState<any>({uid:"",name:""})
   const [isLogin,setIsLogin] = useState<any>(false)
   const [hasNumber, setHasNumber] = useState<any>(true)
 
@@ -73,40 +61,49 @@ const App = () => {
   const checkIfLoggedIn = () => {
     auth().onAuthStateChanged(
       function(result) {
-        result && alreadySignUp(result)
-        result && checkNumber(result)
-        result && setUserId(result.uid)
+        result && (alreadySignUp(result), checkNumber(result), setInfo({uid:result.uid,name:result.displayName}),getToken(result.uid))
         setIsLogin(result)
         }
     )
   };
 
-  const getToken = async () => {
+  const getToken = async (uid:any) => {
     
-    const oldToken = await messaging().getToken();
-    await messaging().deleteToken();
-    const newToken = await messaging().getToken();
-    if (oldToken === newToken) {
-       console.log('not refresh')
-    } else {
-      console.log(newToken)
-      return newToken;
-    }
+    const token = await messaging().getToken();
+    // const oldToken = await messaging().getToken();
+    // await messaging().deleteToken();
+    // const newToken = await messaging().getToken();
+    // if (oldToken === newToken) {
+    //     console.error('Token has not been refreshed');
+  // } 
+    database().ref('add_friend_data/'+uid).update({token:token})
+
   };
+
 
 
   useEffect(() => {
     checkIfLoggedIn()
-    getToken()
-
+    requestUserPermission()
   },[])
+
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async (remoteMessage:any) => {
+      // Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+      Platform.OS === 'ios' ? PushNotification.localNotification({title:remoteMessage.notification?.title,message:remoteMessage.notification?.body,picture:remoteMessage.data.imageUrl}) :
+      PushNotification.localNotification({channelId:"channel-id",title:remoteMessage.notification?.title,message:remoteMessage.notification?.body,largeIconUrl:remoteMessage.data.imageUrl})
+    });
+
+    return unsubscribe;
+  }, []);
+
 
   return (
     <NavigationContainer>
       <SafeAreaView style={{flex:1}}>
         {isLogin? 
           hasNumber ? 
-          <MyStack userId={userId}/> : <InputNumber userId={userId}/>
+          <MyStack info={info}/> : <InputNumber info={info}/>
           : <Signin/>
         }
       </SafeAreaView>
@@ -115,22 +112,6 @@ const App = () => {
 };
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
 });
 
 export default App;

@@ -1,44 +1,24 @@
 
 import React,{useState,useEffect,useContext} from 'react';
-import {Platform, SafeAreaView, StyleSheet, Text, View, Alert, PermissionsAndroid, Dimensions, TouchableNativeFeedback,TouchableOpacity} from 'react-native';
+import {Platform, SafeAreaView, StyleSheet, Text, View, Alert, Dimensions, TouchableNativeFeedback,TouchableOpacity} from 'react-native';
 import database from '@react-native-firebase/database';
 import Contacts from 'react-native-contacts';
 import firebaseInit from '../utils/firebaseInit';
 import {StackContext} from '../utils/StackContext';
 import { AnimatedFlatList, AnimationType } from 'flatlist-intro-animations';
 import { useHeaderHeight } from '@react-navigation/elements';
+import {addRequest} from "../utils/notification"
+import {throwRequest} from '../utils/firebaseCall'
 firebaseInit()
 
 const screenWidth= Dimensions.get('screen').width
 const screenHeight= Dimensions.get('screen').height
 
-const AddFriend = ({navigation}:any) => {
+const AddFriend = () => {
 
-  const myContacts:any = {}
-  const [addList,setAddList] = useState<any>({})
-  const {userInfo} = useContext(StackContext)
+  const {userInfo,addList} = useContext(StackContext)
   const headerHeight = useHeaderHeight();
   
-  const getList = () => {
-    Contacts.getAll()
-      .then((contacts) => {
-        contacts.map((item)=>{
-          myContacts[item.phoneNumbers[0]['number']]={name:item.familyName+item.givenName, phone_number:item.phoneNumbers[0]['number']}
-        })
-        database().ref('user_phone_numbers').once('value',snapshot=>{
-          Object.values(snapshot.val()).map((info:any)=>{
-            if(myContacts[info.phone_number]){
-              addList[info.phone_number]={...myContacts[info.phone_number],uid:info.uid}
-              setAddList({...addList})  
-            }
-          })
-          // console.log(addList)
-        })
-      })
-      .catch((e) => {
-        console.log('cannot access');
-      });
-  };
 
   const rend_item =(item:any)=>{
 
@@ -51,14 +31,14 @@ const AddFriend = ({navigation}:any) => {
     )
 
     return (
-      <View style={{justifyContent:'center',alignItems:'center',margin:screenWidth*0.03}}>       
+      <View style={{justifyContent:'center',alignItems:'center',margin:screenWidth*0.03}} key={item.index}>       
         {Platform.OS === 'android' ?        
-          <TouchableNativeFeedback onPress={()=>Alert.alert("item")} onLongPress={()=>{Alert.alert("삭제하시겠습니까")}}
+          <TouchableNativeFeedback onPress={()=>{addRequest(item.item.token),throwRequest(userInfo.uid,item.item.uid,userInfo.myPhone,userInfo.name)}} onLongPress={()=>{Alert.alert("삭제하시겠습니까")}}
             background={TouchableNativeFeedback.Ripple('#00000040', false)} useForeground={true}>
             {pushItem}
           </TouchableNativeFeedback> :
           
-          <TouchableOpacity onPress={()=>Alert.alert("item")} onLongPress={()=>{Alert.alert("삭제하시겠습니까")}}>
+          <TouchableOpacity onPress={()=>{addRequest(item.item.token),throwRequest(userInfo.uid,item.item.uid,userInfo.myPhone,userInfo.name)}} onLongPress={()=>{Alert.alert("삭제하시겠습니까")}}>
             {pushItem}
           </TouchableOpacity>}
       </View>
@@ -66,25 +46,8 @@ const AddFriend = ({navigation}:any) => {
   }
 
 
-  useEffect(()=>{
-    if (Platform.OS === 'android') {
-
-      PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
-        {
-          'title': 'Contacts',
-          'message': 'This app would like to view your contacts.',
-          'buttonPositive': 'Please accept bare mortal'
-        }
-      )
-  }
-  getList()
-  
-  },[])
-
-
   return (
-    <SafeAreaView style={{flex:1}}>
+    <SafeAreaView style={{flex:1, backgroundColor:'white'}}>
      
      {Object.keys(addList).length!==0 ?  
 
@@ -93,7 +56,6 @@ const AddFriend = ({navigation}:any) => {
         renderItem={rend_item}
         animationType={AnimationType.SlideFromBottom}
         animationDuration={1000}
-        keyExtractor={(index:any) => index}
         contentContainerStyle={{minHeight:screenHeight-(headerHeight*3)}}
       />
       : 

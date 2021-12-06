@@ -3,10 +3,14 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 
 platform :ios, '11.0'
 
+#push를 위한 조치 테스트
+$FirebaseSDKVersion = '8.9.1'
+
 target 'AYO' do
   config = use_native_modules!
 
-
+  #push를 위한 조치 테스트
+  pod 'RNFBMessaging', :path => '../node_modules/@react-native-firebase/messaging'
 
   use_react_native!(
     :path => config[:reactNativePath],

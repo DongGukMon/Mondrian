@@ -15,7 +15,7 @@ import { setNumber } from '../utils/firebaseCall';
 const screenWidth=Dimensions.get('screen').width
 
 interface Iprops{
-  userId:string
+  info:any
 }
 
 const InputNumber = (props:Iprops) => {
@@ -26,7 +26,7 @@ const InputNumber = (props:Iprops) => {
     <SafeAreaView style={{flex:1, backgroundColor:'#EBECF0', justifyContent:'center', alignItems:'center'}}>
       <Text>전화번호 입력.</Text>
       <TextInput style={{...styles.numberInput,width:screenWidth*0.7, height:35, textAlign:'center'}} onChangeText={text=>setPhoneNum(text)} value={phoneNum} placeholder="0000-0000" keyboardType="numeric"/>
-      <Button title="확인" onPress={()=>setNumber(phoneNum,props.userId)}/>
+      <Button title="확인" onPress={()=>setNumber(phoneNum,props.info.uid,props.info.name)}/>
       <Text>{phoneNum}</Text>
     </SafeAreaView>
   );

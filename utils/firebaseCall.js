@@ -1,6 +1,6 @@
 import React,{useContext} from 'react';
 
-import database from '@react-native-firebase/database';
+import database, { FirebaseDatabaseTypes } from '@react-native-firebase/database';
 import firebaseInit from './firebaseInit';
 // import {UserInfoContext} from './UserInfoContext';
 
@@ -9,12 +9,48 @@ firebaseInit()
 // const [userInfo, setUserInfo] = useContext(UserInfoContext);
 
 
-export async function setNumber(num, uid) {
+export async function sayYes(myUid,friendUid, myPhone, friendPhone) {
   database()
-    .ref('user_phone_numbers/'+uid)
+    .ref('friend_list/'+friendUid)
+    .update({
+      [myUid]:myPhone
+    });
+  database()
+    .ref('friend_list/'+myUid)
+    .update({
+      [friendUid]:friendPhone
+    });
+  database().ref('request_list/'+myUid+'/'+friendUid).remove()
+}
+
+export async function sayNo(myUid,friendUid){
+  database().ref('request_list/'+myUid+'/'+friendUid).remove()
+}
+
+export async function deleteFriend(myUid,friendUid){
+  database().ref('friend_list/'+myUid+'/'+friendUid).remove()
+  database().ref('friend_list/'+friendUid+'/'+myUid).remove()
+}
+
+export async function throwRequest(myUid,friendUid, myPhone,myName) {
+  database()
+    .ref('request_list/'+friendUid)
+    .update({
+      [myUid]:{
+        phone_number:myPhone,
+        uid:myUid,
+        name:myName
+      }
+    });
+}
+
+export async function setNumber(num, uid, name) {
+  database()
+    .ref('add_friend_data/'+uid)
     .update({
       phone_number:num,
-      uid:uid
+      uid:uid,
+      name:name
     });
 
   database()

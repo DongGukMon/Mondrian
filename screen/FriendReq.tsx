@@ -1,96 +1,79 @@
 
 import React,{useState,useEffect,useContext} from 'react';
-import {Platform, SafeAreaView, StyleSheet, Text, View, Alert, PermissionsAndroid, Dimensions, TouchableNativeFeedback,TouchableOpacity} from 'react-native';
+import {Platform, SafeAreaView, StyleSheet, Text, View, Alert, Dimensions, TouchableNativeFeedback,TouchableOpacity} from 'react-native';
 import database from '@react-native-firebase/database';
-import Contacts from 'react-native-contacts';
 import firebaseInit from '../utils/firebaseInit';
 import {StackContext} from '../utils/StackContext';
 import { AnimatedFlatList, AnimationType } from 'flatlist-intro-animations';
 import { useHeaderHeight } from '@react-navigation/elements';
+import {sayYes,sayNo} from '../utils/firebaseCall'
 firebaseInit()
 
 const screenWidth= Dimensions.get('screen').width
 const screenHeight= Dimensions.get('screen').height
 
-const testArr = [1,2,3,4,5,6,7,8,9,10]
 
-const FriendReq = ({navigation}:any) => {
+const FriendReq = () => {
 
-  const myContacts:any = {}
-  const [addList,setAddList] = useState<any>({})
-  const {userInfo} = useContext(StackContext)
+
+  const {userInfo,requestList,setRequestList} = useContext(StackContext)
   const headerHeight = useHeaderHeight();
-  
-  // const getList = () => {
-  //   Contacts.getAll()
-  //     .then((contacts) => {
-  //       contacts.map((item)=>{
-  //         myContacts[item.phoneNumbers[0]['number']]={name:item.familyName+item.givenName, phone_number:item.phoneNumbers[0]['number']}
-  //       })
-  //       database().ref('user_phone_numbers').once('value',snapshot=>{
-  //         Object.values(snapshot.val()).map((info:any)=>{
-  //           if(myContacts[info.phone_number]){
-  //             addList[info.phone_number]={...myContacts[info.phone_number],uid:info.uid}
-  //             setAddList({...addList})  
-  //           }
-  //         })
-  //         // console.log(addList)
-  //       })
-  //     })
-  //     .catch((e) => {
-  //       console.log('cannot access');
-  //     });
-  // };
+
+
+  const refreshList =(index:any)=>{
+    var tempArr = requestList.slice()
+    tempArr.splice(index,1)
+    setRequestList(tempArr)
+  }
 
   const rend_item =(item:any)=>{
 
-    const pushItem = (
-      <View style={{...styles.addStyle, overflow: Platform.OS === 'android' ? 'hidden' : 'visible', width:screenWidth*0.8, height:screenWidth*0.30}}>
-          <Text>{item.item}</Text>
-      </View> 
-    )
+    const pushItem =(text:string)=> {
+      return (Platform.OS === 'android' ?
+      
+        <TouchableNativeFeedback onPress={()=>{refreshList(item.index), text==='수락'?sayYes(userInfo.uid,item.item.uid,userInfo.myPhone,item.item.phone_number):sayNo(userInfo.uid,item.item.uid)}}
+          background={TouchableNativeFeedback.Ripple('#00000040', false)} useForeground={true}>
+          <View style={{...styles.addStyle, overflow: 'hidden', width:screenWidth*0.15, height:50}}>
+              <View>
+                <Text>{text}</Text>
+              </View>
+          </View>
+        </TouchableNativeFeedback> :
+      
+        (<TouchableOpacity onPress={()=>{refreshList(item.index), text==='수락'?sayYes(userInfo.uid,item.item.uid,userInfo.myPhone,item.item.phone_number):sayNo(userInfo.uid,item.item.uid)}}>
+        <View style={{...styles.addStyle, overflow: 'visible', width:screenWidth*0.15, height:50,marginLeft:10}}>
+              <View>
+                <Text>{text}</Text>
+              </View>
+          </View>
+        </TouchableOpacity>)
+      )
+    }
 
     return (
-      <View style={{justifyContent:'center',alignItems:'center',margin:screenWidth*0.03}}>       
-        {Platform.OS === 'android' ?        
-          <TouchableNativeFeedback onPress={()=>Alert.alert("item")} onLongPress={()=>{Alert.alert("삭제하시겠습니까")}}
-            background={TouchableNativeFeedback.Ripple('#00000040', false)} useForeground={true}>
-            {pushItem}
-          </TouchableNativeFeedback> :
-          
-          <TouchableOpacity onPress={()=>Alert.alert("item")} onLongPress={()=>{Alert.alert("삭제하시겠습니까")}}>
-            {pushItem}
-          </TouchableOpacity>}
+      <View style={{justifyContent:'center',alignItems:'center',margin:screenWidth*0.03}}> 
+        <View style={{...styles.addStyle,width:screenWidth*0.9,height:80,flexDirection:'row',marginBottom:15,justifyContent:'space-between',padding:15}}>
+          <View style={{flexDirection:'row'}}>
+            <Text>{item.item.name}   </Text>
+            <Text>{item.item.phone_number}</Text>
+          </View>
+          <View style={{flexDirection:'row'}}>
+            {pushItem("수락")}
+            {pushItem("거절")}
+          </View>
+        </View>
       </View>
     )
   }
-  
-  useEffect(()=>{
-
-    if (Platform.OS === 'android') {
-
-      PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
-        {
-          'title': 'Contacts',
-          'message': 'This app would like to view your contacts.',
-          'buttonPositive': 'Please accept bare mortal'
-        }
-      )
-  }
-
-  // getList()
-  
-  },[])
 
 
   return (
     <SafeAreaView style={{flex:1}}>
      
-     {testArr.length!==0 ?  
+     {requestList.length!==0 ?  
 
       <AnimatedFlatList
-        data={testArr}
+        data={requestList}
         renderItem={rend_item}
         animationType={AnimationType.SlideFromBottom}
         animationDuration={1000}
@@ -99,7 +82,7 @@ const FriendReq = ({navigation}:any) => {
       />
       : 
       <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-        <Text>친구들한테 추천좀 해줘요</Text>
+        <Text>친구 신청이 없어영</Text>
       </View>
      }
      </SafeAreaView>
@@ -111,7 +94,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center', 
     alignItems: 'center',
     borderRadius: 25, 
-    marginBottom:15,
     backgroundColor: 'white',
     shadowColor: "#000",
     shadowOffset: {

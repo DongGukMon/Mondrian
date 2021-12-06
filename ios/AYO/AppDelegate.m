@@ -44,6 +44,7 @@ static void InitializeFlipper(UIApplication *application) {
                                                    moduleName:@"AYO"
                                             initialProperties:nil];
 
+  
   UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
   center.delegate = self;
 
@@ -64,12 +65,9 @@ static void InitializeFlipper(UIApplication *application) {
   return YES;
 }
 
+
+
 // add start
-// Required to register for notifications
-- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
-{
- [RNCPushNotificationIOS didRegisterUserNotificationSettings:notificationSettings];
-}
 // Required for the register event.
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
@@ -86,16 +84,18 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
  [RNCPushNotificationIOS didFailToRegisterForRemoteNotificationsWithError:error];
 }
-// Required for the localNotification event.
-- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+// Required for localNotification event
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+didReceiveNotificationResponse:(UNNotificationResponse *)response
+         withCompletionHandler:(void (^)(void))completionHandler
 {
- [RNCPushNotificationIOS didReceiveLocalNotification:notification];
+  [RNCPushNotificationIOS didReceiveNotificationResponse:response];
 }
 
 //Called when a notification is delivered to a foreground app.
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
 {
-  completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge);
+  completionHandler(UNNotificationPresentationOptionSound | UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionBadge);
 }
 
 // add end
