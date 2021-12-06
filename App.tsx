@@ -16,8 +16,7 @@ import messaging from '@react-native-firebase/messaging';
 
 
 messaging().setBackgroundMessageHandler(async (remoteMessage:any) => {
-  console.log("hoi")
-  // Platform.OS === 'ios' ? PushNotification.localNotification({title:"hi",message:"hello",soundName: 'default'}) :
+  console.log("백그라운드")
   PushNotification.localNotification({channelId:"channel-id",title:remoteMessage.data?.title,message:remoteMessage.data?.body,largeIconUrl:remoteMessage.data.imageUrl, picture:remoteMessage.data.imageUrl})
 });
 
@@ -92,7 +91,7 @@ const App = () => {
 
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async (remoteMessage:any) => {
-      console.log("hi")
+      console.log("포그라운드")
       // Platform.OS === 'ios' ? PushNotification.localNotification({title:remoteMessage.data?.title,message:remoteMessage.data?.body,picture:remoteMessage.data.imageUrl}) :
       PushNotification.localNotification({channelId:"channel-id",title:remoteMessage.data?.title,message:remoteMessage.data?.body,largeIconUrl:remoteMessage.data.imageUrl,picture:remoteMessage.data.imageUrl})
     });
