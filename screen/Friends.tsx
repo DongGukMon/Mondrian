@@ -9,7 +9,8 @@ import {
   View,
   Alert,
   Platform,
-  Dimensions
+  Dimensions,
+  ImageBackground
 } from 'react-native';
 import { AnimatedFlatList, AnimationType } from 'flatlist-intro-animations';
 import { useHeaderHeight } from '@react-navigation/elements';
@@ -19,14 +20,13 @@ import { deleteFriend } from '../utils/firebaseCall';
 const screenWidth= Dimensions.get('screen').width
 const screenHeight= Dimensions.get('screen').height
 
-
 const Friends = ({navigation}:any) => {
   
   const headerHeight = useHeaderHeight();
-  const{userInfo,friendList,setFriendList,selectedFriend,setSelectedFriend} = useContext(StackContext)
+  const{userInfo,friendList,setFriendList,setSelectedFriend,getFriends} = useContext(StackContext)
 
 
-  const deleteAlert = (myUid:string,friendUid:string,index:number)=>{
+  const deleteAlert = (myUid:string,friendUid:string,phone_number:string)=>{
     Alert.alert(
       "",
       "친구 목록에서 제거하시겠습니까?",
@@ -38,18 +38,11 @@ const Friends = ({navigation}:any) => {
         },
         { text: "OK", onPress: () => {
             deleteFriend(myUid,friendUid)
-            // refreshList(index)
           }  
         }
       ]
     );
   }
-
-  // const refreshList =(index:any)=>{
-  //   var tempArr = friendList.slice()
-  //   tempArr.splice(index,1)
-  //   setFriendList(tempArr)
-  // }
 
   const rend_item =(item:any)=>{
     
@@ -63,12 +56,12 @@ const Friends = ({navigation}:any) => {
     return (
       <View style={{justifyContent:'center',alignItems:'center',margin:screenWidth*0.03}} key={item.index}>       
         {Platform.OS === 'android' ?        
-          <TouchableNativeFeedback onPress={()=>{setSelectedFriend(item.item), navigation.navigate('PushScreen')}} onLongPress={()=>{deleteAlert(userInfo.uid,item.item.uid,item.index)}}
+          <TouchableNativeFeedback onPress={()=>{setSelectedFriend(item.item), navigation.navigate('PushScreen')}} onLongPress={()=>{deleteAlert(userInfo.uid,item.item.uid,item.item.phone_number)}}
             background={TouchableNativeFeedback.Ripple('#00000040', false)} useForeground={true}>
             {pushItem}
           </TouchableNativeFeedback> :
           
-          <TouchableOpacity onPress={()=>{setSelectedFriend(item.item),navigation.navigate('PushScreen')}} onLongPress={()=>{deleteAlert(userInfo.uid,item.item.uid,item.index)}}>
+          <TouchableOpacity onPress={()=>{setSelectedFriend(item.item),navigation.navigate('PushScreen')}} onLongPress={()=>{deleteAlert(userInfo.uid,item.item.uid,item.item.phone_number)}}>
             {pushItem}
           </TouchableOpacity>}
       </View>
@@ -76,24 +69,31 @@ const Friends = ({navigation}:any) => {
   }
 
 
+  useEffect(()=>{
+    getFriends()
+  },[])
+
   return (
     <SafeAreaView style={{flex:1, backgroundColor:'white'}}>
-     
-    {Object.values<any>(friendList).length!==0 ?  
-
-     <AnimatedFlatList
-       data={Object.values<any>(friendList)}
-       renderItem={rend_item}
-       animationType={AnimationType.SlideFromBottom}
-       animationDuration={1000}
-       // keyExtractor={(index:any) => index}
-       contentContainerStyle={{minHeight:screenHeight-(headerHeight*3)}}
-     />
-     : 
-     <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-       <Text>아싸</Text>
-     </View>
-    }
+      <ImageBackground style={{flex:1}} source={Object.values<any>(friendList).length!==0 ? require('../assets/background/background5.png') : require('../assets/background/background4.png')}>
+      <View style={{marginTop:10}}>
+        {Object.values<any>(friendList).length!==0 ?  
+          <AnimatedFlatList
+            data={Object.values<any>(friendList)}
+            // data={testArr}
+            renderItem={rend_item}
+            animationType={AnimationType.SlideFromBottom}
+            animationDuration={1000}
+            // keyExtractor={(index:any) => index}
+            contentContainerStyle={{minHeight:screenHeight-(headerHeight*3)}}
+          />
+           : 
+        <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+          <Text>인싸</Text>
+        </View>
+        }
+    </View>
+    </ImageBackground>
     </SafeAreaView>
   )
 };
@@ -102,17 +102,9 @@ const styles = StyleSheet.create({
   addStyle: {
     justifyContent: 'center', 
     alignItems: 'center',
-    borderRadius: 25, 
-    marginBottom:15,
-    backgroundColor: 'white',
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 10,
-      height: 10,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
-    elevation: 10,
+    borderRadius: 25,
+    backgroundColor: '#ABDECB',
+    borderWidth:3
   }
 });
 

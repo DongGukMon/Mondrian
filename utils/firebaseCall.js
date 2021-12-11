@@ -20,11 +20,20 @@ export async function sayYes(myUid,friendUid, myPhone, friendPhone) {
     .update({
       [friendUid]:friendPhone
     });
-  database().ref('request_list/'+myUid+'/'+friendUid).remove()
+
+  database().ref('request_list/send/'+myUid+'/'+friendUid).remove()
+  database().ref('request_list/send/'+friendUid+'/'+myUid).remove()
+
+  database().ref('request_list/receive/'+myUid+'/'+friendUid).remove()
+  database().ref('request_list/receive/'+friendUid+'/'+myUid).remove()
 }
 
 export async function sayNo(myUid,friendUid){
-  database().ref('request_list/'+myUid+'/'+friendUid).remove()
+  database().ref('request_list/send/'+myUid+'/'+friendUid).remove()
+  database().ref('request_list/send/'+friendUid+'/'+myUid).remove()
+
+  database().ref('request_list/receive/'+myUid+'/'+friendUid).remove()
+  database().ref('request_list/receive/'+friendUid+'/'+myUid).remove()
 }
 
 export async function deleteFriend(myUid,friendUid){
@@ -34,7 +43,7 @@ export async function deleteFriend(myUid,friendUid){
 
 export async function throwRequest(myUid,friendUid, myPhone,myName) {
   database()
-    .ref('request_list/'+friendUid)
+    .ref('request_list/receive/'+friendUid)
     .update({
       [myUid]:{
         phone_number:myPhone,
@@ -42,6 +51,12 @@ export async function throwRequest(myUid,friendUid, myPhone,myName) {
         name:myName
       }
     });
+
+  database()
+  .ref('request_list/send/'+myUid)
+  .update({
+    [friendUid]:'uid'
+  });
 }
 
 export async function setNumber(num, uid, name) {
@@ -51,6 +66,19 @@ export async function setNumber(num, uid, name) {
       phone_number:num,
       uid:uid,
       name:name
+    });
+
+  database()
+    .ref('users/' + uid)
+    .update({phone_number:num});
+
+}
+
+export async function editNumber(num, uid) {
+  database()
+    .ref('add_friend_data/'+uid)
+    .update({
+      phone_number:num,
     });
 
   database()

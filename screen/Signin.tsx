@@ -1,6 +1,6 @@
 
 import React,{useState,useEffect} from 'react';
-import {SafeAreaView, StyleSheet, Text, Button} from 'react-native';
+import {SafeAreaView, StyleSheet, Text, Button, ImageBackground,View, Dimensions} from 'react-native';
 import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
 import firebaseInit from "../utils/firebaseInit";
@@ -13,6 +13,7 @@ GoogleSignin.configure({
   iosClientId: '594993990605-e1p4k1e7bkir57i4fjtqio7ngt76pmvb.apps.googleusercontent.com'
 });
 
+const w = Dimensions.get('screen').width
 
 const Signin = () => {
 
@@ -30,11 +31,33 @@ const Signin = () => {
     
   }
 
+
+
+  const mondrianRender=()=>{
+    const baduk = []
+    var arr = [6,7,8,16,23,45,51,55,57,63,66,86,97]
+    for(var i:number = 0; i<100; i++){
+      baduk.push(
+        <View style={{width:w*0.1414,height:w*0.1414, borderWidth:(arr.includes(i)) ?0:1, backgroundColor:(arr.includes(i)&&'pink'),justifyContent:'center'}}>
+          <Text style={{textAlign:'center'}}>
+            {i}
+          </Text>
+        </View>)
+    }
+    
+    return baduk
+  }
+
   return (
-    <SafeAreaView style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+    <SafeAreaView style={{flex:1,borderWidth:2 }}>
+      <ImageBackground style={{flex:1,justifyContent:'center', alignItems:'center'}} source={require('../assets/background/background4.png')}>  
       <Text>여기는 로그인 화면입니다.</Text>
       <Button title="google signin" onPress={()=>onGoogleButtonPress()}/>
+      </ImageBackground>
     </SafeAreaView>
+    // <SafeAreaView style={{flex:1,borderWidth:2, flexDirection:'row', flexWrap:'wrap' }}>
+    //   {mondrianRender()}
+    // </SafeAreaView>
   );
 };
 

@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from 'react';
-import {SafeAreaView, StyleSheet, Alert, Platform, AppRegistry} from 'react-native';
+import {SafeAreaView, Platform, AppRegistry, Alert} from 'react-native';
 import MyStack from './screen/navContainer/MyStack';
 import Signin from './screen/Signin';
 import InputNumber from './screen/InputNumber';
@@ -7,20 +7,20 @@ import 'react-native-gesture-handler';
 import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database'
 import firebaseInit from './utils/firebaseInit';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer} from '@react-navigation/native';
 import {alreadySignUp} from "./utils/firebaseCall"
-
-import PushNotificationIOS from "@react-native-community/push-notification-ios";
 import PushNotification from "react-native-push-notification";
 import messaging from '@react-native-firebase/messaging';
+import {getEnabled,getLoginChecker,pushCustom} from './utils/localStorage'
 
-
-messaging().setBackgroundMessageHandler(async (remoteMessage:any) => {
-  console.log("백그라운드")
-  PushNotification.localNotification({channelId:"channel-id",title:remoteMessage.data?.title,message:remoteMessage.data?.body,largeIconUrl:remoteMessage.data.imageUrl, picture:remoteMessage.data.imageUrl})
-});
-
-AppRegistry.registerComponent('app', () => App);
+PushNotification.createChannel(
+  {
+    channelId: "channel-id", // (required)
+    channelName: "My channel", // (required)
+   
+  },
+  (created) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
+);
 
 async function requestUserPermission() {
   const authStatus = await messaging().requestPermission();
@@ -33,14 +33,8 @@ async function requestUserPermission() {
   }
 }
 
-PushNotification.createChannel(
-  {
-    channelId: "channel-id", // (required)
-    channelName: "My channel", // (required)
-   
-  },
-  (created) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
-);
+
+AppRegistry.registerComponent('app', () => App);
 
 
 firebaseInit()
@@ -69,16 +63,8 @@ const App = () => {
   };
 
   const getToken = async (uid:any) => {
-    
     const token = await messaging().getToken();
-    // const oldToken = await messaging().getToken();
-    // await messaging().deleteToken();
-    // const newToken = await messaging().getToken();
-    // if (oldToken === newToken) {
-    //     console.error('Token has not been refreshed');
-  // } 
     database().ref('add_friend_data/'+uid).update({token:token})
-
   };
 
 
@@ -86,18 +72,10 @@ const App = () => {
   useEffect(() => {
     checkIfLoggedIn()
     requestUserPermission()
-
+    getEnabled()
+    getLoginChecker()
+    pushCustom()
   },[])
-
-  useEffect(() => {
-    const unsubscribe = messaging().onMessage(async (remoteMessage:any) => {
-      console.log("포그라운드")
-      // Platform.OS === 'ios' ? PushNotification.localNotification({title:remoteMessage.data?.title,message:remoteMessage.data?.body,picture:remoteMessage.data.imageUrl}) :
-      PushNotification.localNotification({channelId:"channel-id",title:remoteMessage.data?.title,message:remoteMessage.data?.body,largeIconUrl:remoteMessage.data.imageUrl,picture:remoteMessage.data.imageUrl})
-    });
-
-    return unsubscribe;
-  }, []);
 
 
   return (
@@ -113,7 +91,5 @@ const App = () => {
   );
 };
 
-const styles = StyleSheet.create({
-});
 
 export default App;
