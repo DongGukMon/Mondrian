@@ -7,6 +7,7 @@ import {StackContext} from '../utils/StackContext';
 import { AnimatedFlatList, AnimationType } from 'flatlist-intro-animations';
 import { useHeaderHeight } from '@react-navigation/elements';
 import {sayYes,sayNo} from '../utils/firebaseCall'
+import {acceptRequest} from '../utils/notification'
 firebaseInit()
 
 const screenWidth= Dimensions.get('screen').width
@@ -25,20 +26,16 @@ const FriendReq = () => {
     const pushItem =(text:string)=> {
       return (Platform.OS === 'android' ?
       
-        <TouchableNativeFeedback onPress={()=>{text==='수락'?sayYes(userInfo.uid,item.item.uid,userInfo.myPhone,item.item.phone_number):sayNo(userInfo.uid,item.item.uid)}}
+        <TouchableNativeFeedback onPress={()=>{text==='수락'?(sayYes(userInfo.uid,item.item.uid,userInfo.myPhone,item.item.phone_number), acceptRequest(item.item.token,userInfo.name)):sayNo(userInfo.uid,item.item.uid)}}
           background={TouchableNativeFeedback.Ripple('#00000040', false)} useForeground={true}>
-          <View style={{...styles.buttonStyle, overflow: 'hidden', width:screenWidth*0.16, height:50, marginLeft:12}}>
-              <View>
-                <Text>{text}</Text>
-              </View>
+          <View style={{...styles.buttonStyle, overflow: 'hidden', width:screenWidth*0.16, height:50, marginLeft:text==="수락" ? 0 : 10}}>
+              <Text style={styles.itemTextStyle}>{text}</Text>
           </View>
-        </TouchableNativeFeedback> :
-      
-        (<TouchableOpacity onPress={()=>{text==='수락'?sayYes(userInfo.uid,item.item.uid,userInfo.myPhone,item.item.phone_number):sayNo(userInfo.uid,item.item.uid)}}>
-        <View style={{...styles.buttonStyle, overflow: 'visible', width:screenWidth*0.16, height:50, marginLeft:12}}>
-              <View>
-                <Text>{text}</Text>
-              </View>
+        </TouchableNativeFeedback> 
+        :
+        (<TouchableOpacity onPress={()=>{text==='수락'? (sayYes(userInfo.uid,item.item.uid,userInfo.myPhone,item.item.phone_number),acceptRequest(item.item.token,userInfo.name)):sayNo(userInfo.uid,item.item.uid)}}>
+        <View style={{...styles.buttonStyle, overflow: 'visible', width:screenWidth*0.16, height:50, marginLeft:text==="수락" ? 0 : 10}}>
+                <Text style={styles.itemTextStyle}>{text}</Text>
           </View>
         </TouchableOpacity>)
       )
@@ -47,11 +44,11 @@ const FriendReq = () => {
     return (
       <View style={{justifyContent:'center',alignItems:'center',margin:screenWidth*0.03}}> 
         <View style={{...styles.addStyle,width:screenWidth*0.9,height:100,flexDirection:'row',marginBottom:15,justifyContent:'space-between',padding:15}}>
-          <View style={{flexDirection:'row'}}>
-            <Text>{item.item.name}   </Text>
-            <Text>{item.item.phone_number}</Text>
+          <View style={{flex:6, flexWrap:'nowrap'}}>
+            <Text style={{...styles.itemTextStyle,fontSize:18}}>{item.item.name} </Text>
+            <Text style={styles.itemTextStyle}>{item.item.phone_number}</Text>
           </View>
-          <View style={{flexDirection:'row'}}>
+          <View style={{flex:4.2, flexDirection:'row'}}>
             {pushItem("수락")}
             {pushItem("거절")}
           </View>
@@ -98,8 +95,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 25, 
     backgroundColor: 'white',
-    borderWidth:1
+    borderWidth:2
   },
+  itemTextStyle:{
+    color:'black',
+    fontWeight:'500',
+    lineHeight: 25
+  }
 });
 
 export default FriendReq;

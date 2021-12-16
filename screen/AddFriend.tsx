@@ -8,7 +8,7 @@ import {StackContext} from '../utils/StackContext';
 import { AnimatedFlatList, AnimationType } from 'flatlist-intro-animations';
 import { useHeaderHeight } from '@react-navigation/elements';
 import {addRequest} from "../utils/notification"
-import {throwRequest} from '../utils/firebaseCall'
+import {throwRequest, cancelRequest} from '../utils/firebaseCall'
 
 
 firebaseInit()
@@ -23,12 +23,30 @@ const AddFriend = () => {
   const headerHeight = useHeaderHeight();
   
 
+  const canselAlert = (myUid:string,friendUid:string)=>{
+    Alert.alert(
+      "",
+      "요청을 취소 하시겠습니까?",
+      [
+        {
+          text: "아니요",
+          onPress: () => {},
+          style: "cancel"
+        },
+        { text: "예", onPress: () => {
+            cancelRequest(myUid,friendUid)
+          }  
+        }
+      ]
+    );
+  }
+
   const rend_item =(item:any)=>{
 
     const pushItem = (
-      <View style={{...styles.addStyle, overflow: Platform.OS === 'android' ? 'hidden' : 'visible', width:screenWidth*0.8, height:screenWidth*0.30}}>
-          <Text>{item.item.name}</Text>
-          <Text>{item.item.phone_number}</Text>
+      <View style={{...styles.addStyle, overflow: Platform.OS === 'android' ? 'hidden' : 'visible', width:screenWidth*0.8, height:screenWidth*0.30, backgroundColor: (sendedReq && sendedReq[item.item.uid]) ? '#CE85F8' : '#FDEC94'}}>
+          <Text style={{fontSize:20,fontWeight:'500', color:'black', lineHeight:25}}>{item.item.name}</Text>
+          <Text style={{fontWeight:'500', color:'black'}}>{item.item.phone_number}</Text>
       </View> 
     )
 
@@ -38,11 +56,11 @@ const AddFriend = () => {
           Alert.alert("이미 친구 요청 했습니다.") 
           :(
             addRequest(item.item.token),
-            throwRequest(userInfo.uid, item.item.uid, userInfo.myPhone, userInfo.name)
+            throwRequest(userInfo.uid, item.item.uid, userInfo.myPhone, userInfo.name, userInfo.token)
           )
         ) : (
             addRequest(item.item.token),
-            throwRequest(userInfo.uid, item.item.uid, userInfo.myPhone, userInfo.name)
+            throwRequest(userInfo.uid, item.item.uid, userInfo.myPhone, userInfo.name, userInfo.token)
       )
       
     }
@@ -50,12 +68,12 @@ const AddFriend = () => {
     return (
       <View style={{justifyContent:'center',alignItems:'center',margin:screenWidth*0.03}} key={item.index}>       
         {Platform.OS === 'android' ?        
-          <TouchableNativeFeedback onPress={()=>pressAction()} onLongPress={()=>{Alert.alert("삭제하시겠습니까")}}
+          <TouchableNativeFeedback onPress={()=>pressAction()} onLongPress={()=>{sendedReq && sendedReq[item.item.uid] && canselAlert(userInfo.uid,item.item.uid)}}
             background={TouchableNativeFeedback.Ripple('#00000040', false)} useForeground={true}>
             {pushItem}
           </TouchableNativeFeedback> :
           
-          <TouchableOpacity onPress={()=>pressAction()} onLongPress={()=>{Alert.alert("삭제하시겠습니까")}}>
+          <TouchableOpacity onPress={()=>pressAction()} onLongPress={()=>{sendedReq && sendedReq[item.item.uid] && canselAlert(userInfo.uid,item.item.uid)}}>
             {pushItem}
           </TouchableOpacity>}
       </View>
@@ -102,8 +120,7 @@ const styles = StyleSheet.create({
   addStyle: {
     justifyContent: 'center', 
     alignItems: 'center',
-    borderRadius: 25, 
-    backgroundColor: '#FDEC94',
+    borderRadius: 25,
     borderWidth:3
   }
 });

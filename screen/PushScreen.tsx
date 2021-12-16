@@ -13,16 +13,17 @@ import {
   Image,
   Modal,
   Button,
-  TextInput
+  TextInput,
+  TouchableWithoutFeedback,
+  TouchableWithoutFeedbackBase
 } from 'react-native';
 import { StackContext } from '../utils/StackContext';
 import { goPush } from '../utils/notification';
 import {setPushCounter,removeValue, pushCustom, setPushCustom} from '../utils/localStorage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FlatList } from 'react-native-gesture-handler';
-
 const screenWidth= Dimensions.get('screen').width
-const screenHeight= Dimensions.get('screen').height
+const screenHeight= Dimensions.get('screen').height > 800 ?  Dimensions.get('screen').height : 800
 
 const basicIconList = [
   {icon:require('../assets/icons/delivery-man.png'), iconUrl:'https://cdn-icons-png.flaticon.com/512/2830/2830175.png', description:"배달"},
@@ -31,8 +32,15 @@ const basicIconList = [
   {icon:require('../assets/icons/coffee-cup.png'), iconUrl:'https://cdn-icons-png.flaticon.com/512/751/751621.png', description:"카페"},
   {icon:require('../assets/icons/game-controller.png'), iconUrl:'https://cdn-icons-png.flaticon.com/512/2972/2972351.png', description:"게임"},
   {icon:require('../assets/icons/steering-wheel.png'), iconUrl:'https://cdn-icons-png.flaticon.com/512/1581/1581955.png', description:"드라이브"},
-  {icon:require('../assets/icons/hey.png'), iconUrl:'https://cdn-icons.flaticon.com/png/512/4081/premium/4081196.png?token=exp=1639147100~hmac=d3a6d1e8c0e4676e67dbcde746ecb410', description:"헤이"},
-  {icon:require('../assets/icons/open-book.png'), iconUrl:'https://cdn-icons.flaticon.com/png/512/2280/premium/2280151.png?token=exp=1639146939~hmac=c6a5b554815e5ef1a7c3d974a52059d1', description:"공부"}
+  
+  {icon:require('../assets/icons/open-book.png'), iconUrl:'https://cdn-icons.flaticon.com/png/512/2280/premium/2280151.png?token=exp=1639146939~hmac=c6a5b554815e5ef1a7c3d974a52059d1', description:"공부"},
+  {icon:require('../assets/icons/destination.png'), iconUrl:'https://cdn-icons-png.flaticon.com/512/854/854996.png', description:"여행"},
+  {icon:require('../assets/icons/excercise.png'), iconUrl:'https://cdn-icons.flaticon.com/png/512/3136/premium/3136167.png?token=exp=1639207505~hmac=c67405fa71b8d3968b9102f00dea1dee', description:"운동"},
+  {icon:require('../assets/icons/bored.png'), iconUrl:'https://cdn-icons.flaticon.com/png/512/3688/premium/3688068.png?token=exp=1639207326~hmac=f3806682652772152f0258357bc372f8', description:"피곤"},
+  {icon:require('../assets/icons/hey.png'), iconUrl:'https://cdn-icons.flaticon.com/png/512/4081/premium/4081196.png?token=exp=1639208182~hmac=02bb95a326a0e3505a90b172e10c1f75', description:"헤이"},
+  {icon:require('../assets/icons/yes.png'), iconUrl:'https://cdn-icons.flaticon.com/png/512/3677/premium/3677088.png?token=exp=1639207065~hmac=460c91ee9f776253579305571a0c8944', description:"좋아"},
+  {icon:require('../assets/icons/no.png'), iconUrl:'https://cdn-icons.flaticon.com/png/512/1358/premium/1358126.png?token=exp=1639207102~hmac=97218bbbce4900e4c6d0d751b3fc7894', description:"싫어"}
+
 ]
 
 
@@ -54,7 +62,7 @@ const PushScreen = () => {
 
   const rend_item =(item:any,index:number)=>{
     const pushItem = (
-      <View style={{...styles.pushStyle, overflow: Platform.OS === 'android' ? 'hidden' : 'visible', width:screenWidth*0.40, height:screenWidth*0.40,backgroundColor:isDisabled ? 'gray' : 'white'}}>
+      <View style={{...styles.pushStyle, overflow: Platform.OS === 'android' ? 'hidden' : 'visible', width:screenWidth*0.40, height:screenWidth*0.40,backgroundColor:(isDisabled&&!item.checker) ? 'gray' : 'white'}}>
           <Image style={{width:'70%',height:'70%'}} source={item.icon}/>
       </View> 
     )
@@ -97,12 +105,12 @@ const PushScreen = () => {
           
           //추가하기 버튼 눌렀을 때
           (Platform.OS === 'android' ?        
-            <TouchableNativeFeedback disabled={isDisabled} onPress={()=>{setModalState({isVisible:true,data:item,index:index}), setEditData({title:item.title, body:item.body, icon:''})}}
+            <TouchableNativeFeedback onPress={()=>{setModalState({isVisible:true,data:item,index:index}), setEditData({title:item.title, body:item.body, icon:''})}}
               background={TouchableNativeFeedback.Ripple('#00000040', false)} useForeground={true}>
               {pushItem}
             </TouchableNativeFeedback> 
             :
-            <TouchableOpacity disabled={isDisabled} onPress={()=>{setModalState({isVisible:true,data:item,index:index}), setEditData({title:item.title, body:item.body, icon:''})}}>
+            <TouchableOpacity onPress={()=>{setModalState({isVisible:true,data:item,index:index}), setEditData({title:item.title, body:item.body, icon:''})}}>
               {pushItem}
             </TouchableOpacity>) :
           
@@ -154,49 +162,80 @@ const PushScreen = () => {
       </View>
 
       <Modal visible={modalState.isVisible} transparent={true}>
-        <View style={{flex:1, justifyContent:'center', alignItems:'center', backgroundColor: 'rgba(0,0,0,0.5)'}}>
+        <TouchableOpacity style={styles.modalContainer} onPress={()=>{setModalState({...modalState,isVisible:false}), setEditData({title:'',body:'',icon:''})}}>
           {modalState.data &&
-            <View style={{...styles.modalStyle,height:screenHeight*0.6, width:screenWidth*0.9}}>
-              <View style={styles.inputViewStyle}>  
-                <Text style={styles.editTextStyle}>title: </Text>
-                <TextInput style={{...styles.inputStyle,width:screenWidth*0.6}} value={editData.title} onChangeText={(text)=>setEditData({...editData,title:text})}/>
-              </View>  
-              <View style={styles.inputViewStyle}>  
-                <Text style={styles.editTextStyle}>body: </Text>
-                <TextInput style={{...styles.inputStyle,width:screenWidth*0.6}} value={editData.body} onChangeText={(text)=>setEditData({...editData,body:text})}/>
-              </View>  
-              <View style={{backgroundColor:'yellow'}}>  
-                <FlatList
-                  data={basicIconList}
-                  horizontal
-                  renderItem={iconCarouselRender}
-                />
-                </View>
-                <Button title={"닫기"} onPress={()=>{setModalState({isVisible:false}), setEditData({title:'',body:'',icon:''})}}/>
-                <Button title={modalState.data.checker ? "추가" : "수정"} onPress={()=>{
-                  (editData.title !=='' && editData.body!=='' && editData.icon !== '')
-                  ? (
-                  pushList[modalState.index] = {icon:editData.icon.icon,iconUrl:editData.icon.iconUrl,title:editData.title,body:editData.body},
-                  setPushCustom(JSON.stringify(pushList)),
-                  setPushList([...pushList]),
-                  getPushList(),
-                  setEditData({title:'',body:'',icon:''}),
-                  setModalState({isVisible:false})
-                  ) : (Alert.alert("모든 내용을 입력해주세요"))
-                  }}/>
+            <TouchableWithoutFeedback>
+              <View style={{...styles.modalStyle,height:screenHeight*0.6, width:screenWidth*0.9}}> 
                 
-                {!modalState.data.checker && (
-                  <Button title={"삭제"} onPress={()=>{
-                    pushList.splice(modalState.index,1)
-                    setPushCustom(JSON.stringify(pushList))
-                    setPushList([...pushList])
-                    getPushList()
-                    setModalState({isVisible:false})
-                  }}/>
-                )}
-            </View>
+                {/* Header */}
+                <View style={{height:screenHeight*0.075, justifyContent:'center', borderBottomWidth:3, backgroundColor:'#ABDECB'}}>
+                  <Text style={styles.modalTitleText}>Customizing</Text>
+                </View>
+              
+                {/* Body */}
+                <View style={{alignItems:'center', justifyContent:'center'}}>
+                  <View style={{height:screenHeight*0.03}}/>
+                  {/* message title 입력 */}
+                  <View style={{height:screenHeight*0.085,width:screenWidth*0.8, justifyContent:'space-between'}}>  
+                    <Text style={styles.modalBodyText}>Title</Text>
+                      <TextInput style={{...styles.modalTextInputStyle, width:screenWidth*0.8}} value={editData.title} onChangeText={(text)=>setEditData({...editData,title:text})}/>
+                  </View>
+
+                  <View style={{height:screenHeight*0.015}}/>
+                  {/* message body 입력 */}
+                  <View style={{height:screenHeight*0.085,width:screenWidth*0.8, justifyContent:'space-between'}}>  
+                    <Text style={styles.modalBodyText}>Body</Text>
+                      <TextInput style={{...styles.modalTextInputStyle, width:screenWidth*0.8}} value={editData.body} onChangeText={(text)=>setEditData({...editData,body:text})}/>
+                  </View>
+
+                  <View style={{height:screenHeight*0.015}}/>
+                  {/* message icon 선택 */}
+                  <View style={{width:screenWidth*0.8, justifyContent:'space-between'}}>  
+                    <Text style={styles.modalBodyText}>Icon</Text>
+                      <View style={{borderWidth:3, borderRadius:10, width:screenWidth*0.8, height:screenWidth*0.27, backgroundColor:'#FDEC94'}}>
+                        <FlatList
+                          data={basicIconList}   
+                          horizontal
+                          renderItem={iconCarouselRender}
+                        />
+                      </View>
+                  </View>
+
+                  <View style={{height:screenHeight*0.03}}/>
+
+                  <View style={{ width:screenWidth*0.8,justifyContent:'space-between', flexDirection:'row', paddingHorizontal:modalState.data.checker ? 0:10}}>
+                    <TouchableOpacity style={{...styles.ModalButtonView,width:modalState.data.checker ? screenWidth*0.8:screenWidth*0.35}} onPress={()=>{
+                      (editData.title !=='' && editData.body!=='' && editData.icon !== '')
+                      ? (
+                      pushList[modalState.index] = {icon:editData.icon.icon,iconUrl:editData.icon.iconUrl,title:editData.title,body:editData.body},
+                      setPushCustom(JSON.stringify(pushList)),
+                      setPushList([...pushList]),
+                      getPushList(),
+                      setEditData({title:'',body:'',icon:''}),
+                      setModalState({isVisible:false})
+                      ) : (Alert.alert("모든 내용을 입력해주세요"))
+                      }}>
+                      <Text style={styles.ModalButtonStyle}>{modalState.data.checker ? "추가" : "수정"}</Text>
+                    </TouchableOpacity>
+                    
+                    {!modalState.data.checker && (
+                      <TouchableOpacity style={{...styles.ModalButtonView,width:screenWidth*0.35}} onPress={()=>{
+                        pushList.splice(modalState.index,1)
+                        setPushCustom(JSON.stringify(pushList))
+                        setPushList([...pushList])
+                        getPushList()
+                        setEditData({title:'',body:'',icon:''})
+                        setModalState({isVisible:false})
+                        }}>
+                        <Text style={styles.ModalButtonStyle}>삭제</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View> 
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
           }
-        </View>
+        </TouchableOpacity>
       </Modal>
 
       </ImageBackground>        
@@ -211,27 +250,41 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     borderWidth:3
   },
+  modalContainer:{
+    flex:1, 
+    justifyContent:'center',
+    alignItems:'center',
+    backgroundColor: 'rgba(0,0,0,0.5)'
+  },
   modalStyle:{
     backgroundColor:'white',
-    justifyContent:'center', 
+    // justifyContent:'center', 
     // alignItems:'center',
     borderWidth:3,
     borderRadius:15,
+    overflow:'hidden'
   },
-  inputViewStyle:{
-    flexDirection:'row', 
-    // borderWidth:3, 
-    alignItems:'center',
-    paddingLeft:15,
+  modalTitleText:{
+    fontSize:32, 
+    marginLeft:15,
+    color:'black', 
+    fontWeight:'bold', 
+    textAlign:'center'
   },
-  editTextStyle:{
-    fontSize:20
+  modalBodyText:{
+    fontSize:18,
+    color:'black', 
+    fontWeight:'bold',
+    marginLeft:5,
+    marginBottom:5
   },
-  inputStyle:{
-    borderWidth:1, 
-    paddingLeft:15,
-    marginLeft:5, 
-    fontSize:20
+  modalTextInputStyle:{
+    paddingLeft:15, 
+    borderWidth:3, 
+    borderRadius:10, 
+    height:45, 
+    backgroundColor:'#FDEC94', 
+    fontSize:18
   },
   iconCarouselStyle:{
     marginVertical:10,
@@ -240,6 +293,19 @@ const styles = StyleSheet.create({
     alignItems:'center',
     borderWidth:2,
     borderRadius:10
+  },
+  ModalButtonView:{
+    height:45,
+    borderRadius:10,
+    borderWidth:3, 
+    justifyContent:'center', 
+    backgroundColor:'#E9BCBE'
+  },
+  ModalButtonStyle:{
+    fontSize:18, 
+    textAlign:'center',
+    color:'black', 
+    fontWeight:'bold'
   }
 });
 

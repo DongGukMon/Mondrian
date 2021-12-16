@@ -24,6 +24,33 @@
         })
  }   
 
+ export const acceptRequest =(target,name)=>{
+   console.log(target)
+   console.log(name)
+
+  fetch('https://fcm.googleapis.com/fcm/send', {
+      method: 'POST',
+      headers: {
+        "Accept": 'application/json',
+        'Content-Type': 'application/json',
+        "Authorization": 'key='+`AAAAiohny80:APA91bH_71VhDRhTbJaI40rGhCyxejmUrpIw5FKB2-Om66_q_OojMzgLkuVTuse-9bGWHELcqloWIJd6dblE1knxieMlTF2JrScSqLotOPWVurK64UBoX5jfGS1Az2-ybNOojInNlBQc`,
+      },
+      body: JSON.stringify({
+        "to": target,
+        "data":{
+          "imageUrl": 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/KakaoTalk_logo.svg/600px-KakaoTalk_logo.svg.png',
+          "title": "A-YO",
+          "body": name+"님이 요청을 수락하셨습니다",
+          "type": "acceptReq",
+        },
+        "notification":{
+          content_available: true,
+        },
+        "priority":"high"
+      })
+      })
+}   
+
  export const goPush =(target,name,purpose)=>{
 
   fetch('https://fcm.googleapis.com/fcm/send', {

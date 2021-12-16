@@ -35,12 +35,16 @@ messaging().setBackgroundMessageHandler(async (remoteMessage:any) => {
 
 export default function MyStack(props:Iprops) {
 
-  const [userInfo, setUserInfo] = useState<any>({uid:props.info.uid,myPhone:"",name:props.info.name})
+  const [userInfo, setUserInfo] = useState<any>({uid:props.info.uid})
   const [friendList,setFriendList] = useState<any>({})
   const [myContacts,setMyContacts] = useState<any>({})
   const [addList,setAddList] = useState<any>({})
   const [requestList,setRequestList] = useState<any>([])
-  const [selectedFriend,setSelectedFriend] = useState<any>({}) 
+  const [selectedFriend,setSelectedFriend] = useState<any>({})
+  
+  const [contactsPermission,setContactsPermission] = useState<boolean>(false)
+  // const [contactPermission, setContactsPermission] = useState<any>
+
   const navigation = useNavigation()
   
   const navigationAlert = (screenName:any)=>{
@@ -67,14 +71,14 @@ export default function MyStack(props:Iprops) {
         contacts.map((item)=>{
           item.phoneNumbers[0]&&(myContacts[item.phoneNumbers[0]['number'].replace(/\-/g,'')]={phone_number:item.phoneNumbers[0]['number'].replace(/\-/g,'')})
         })
-
+      
         database().ref('friend_list/'+props.info.uid).on('value',friendData=>{
-          database().ref('add_friend_data').once('value',addData=>{
+          database().ref('users').once('value',addData=>{
 
             for(var member in friendList){delete friendList[member]}
             setFriendList({...friendList})
             for(var member in addList){delete addList[member]}
-            
+
             //연락처와 유저풀 비교해서 친구 추가 가능 목록 생성
             Object.values(addData.val()).map((item:any)=>{
               myContacts[item.phone_number] && (addList[item.uid]={...item})
@@ -87,7 +91,7 @@ export default function MyStack(props:Iprops) {
                 addList[item] && delete addList[item]
 
                 //필요한 친구 데이터(이름,전화번호 등)를 DB에서 가져와 friendList에 셋팅 
-                addData.val()[item] && (friendList[addData.val()[item].uid]=addData.val()[item])
+                addData.val()[item] ? (friendList[item]=addData.val()[item]) : database().ref('friend_list/'+props.info.uid+'/'+item).remove()
                 setFriendList({...friendList})
               })
             )
@@ -117,16 +121,20 @@ export default function MyStack(props:Iprops) {
       PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
         {
-          'title': 'Contacts',
-          'message': 'This app would like to view your contacts.',
-          'buttonPositive': 'Please accept bare mortal'
+          'title': '연락처 연동',
+          'message': '친구 목록을 동기화하기 위해서는 연락처 접근 권한이 필요합니다. 승인하시겠습니까?',
+          'buttonPositive': '승인하겠습니다.'
         }
-      )
+      ).then((result)=>{
+        (result === 'granted') && (setContactsPermission(true), getFriends())
+      })
     }
+      
+    
     getRequest()
 
-    database().ref('users/'+props.info.uid+"/phone_number").once('value',snapshot=>{
-      setUserInfo({...userInfo,myPhone:snapshot.val()})
+    database().ref('users/'+props.info.uid).once('value',snapshot=>{
+      setUserInfo({uid:props.info.uid,myPhone:snapshot.val().phone_number,name:snapshot.val().name,token:snapshot.val().token})
     })
 
     PushNotification.popInitialNotification((notification) => {
@@ -137,12 +145,12 @@ export default function MyStack(props:Iprops) {
       
       var isEnabled = await getEnabled()
       var loginChecker = await getLoginChecker()
-      if((isEnabled=="true")&&(loginChecker=="true")){
-        PushNotification.localNotification({channelId:"channel-id",title:remoteMessage.data?.title,message:remoteMessage.data?.body,largeIconUrl:remoteMessage.data.imageUrl,picture:remoteMessage.data.imageUrl,data:remoteMessage.data})
-        if(remoteMessage.data.type=="FriendReq"){
-          navigationAlert(remoteMessage.data.type)
-        }
-      }
+      
+      remoteMessage.data.type=="FriendReq" ?
+      (navigationAlert(remoteMessage.data.type)) :
+      ((isEnabled=="true")&&(loginChecker=="true")&&
+        PushNotification.localNotification({channelId:"channel-id",title:remoteMessage.data?.title,message:remoteMessage.data?.body,largeIconUrl:remoteMessage.data.imageUrl,picture:remoteMessage.data.imageUrl,data:remoteMessage.data}))
+       
     });
 
     return unsubscribe;
@@ -151,9 +159,9 @@ export default function MyStack(props:Iprops) {
 
 
   return (
-    <StackContext.Provider value={{getFriends,myContacts,setMyContacts,addList,setAddList,userInfo,setUserInfo,requestList,setRequestList,friendList,setFriendList,selectedFriend,setSelectedFriend}}>
+    <StackContext.Provider value={{contactsPermission,setContactsPermission,getFriends,myContacts,setMyContacts,addList,setAddList,userInfo,setUserInfo,requestList,setRequestList,friendList,setFriendList,selectedFriend,setSelectedFriend}}>
       <Stack.Navigator>
-        <Stack.Screen name="Friends" component={Friends} options={({navigation})=>({headerTitleAlign: 'left',headerTitleStyle:{fontSize:20, fontWeight:'bold'}, headerStyle:{backgroundColor:'#E9BCBE', height:screenHeight*0.1, borderBottomWidth:2, borderBottomColor:'black'} , headerRight: ()=>{
+        <Stack.Screen name="Friends" component={Friends} options={({navigation})=>({headerTitleAlign: 'left',headerTitleStyle:{fontSize:24, fontWeight:'bold'}, headerStyle:{backgroundColor:'#E9BCBE', height:screenHeight*0.1, borderBottomWidth:2, borderBottomColor:'black'} , headerRight: ()=>{
           return <View style={{flexDirection:'row', justifyContent:'space-between', width:130, padding:10, backgroundColor:'white', borderRadius:20, marginRight:10}}>
             <TouchableOpacity onPress={()=>{navigation.navigate('AddFriend')}}>
               <Icon name="person-add-outline" size={27} color="black" />
@@ -171,7 +179,7 @@ export default function MyStack(props:Iprops) {
         />
         <Stack.Screen name="PushScreen" component={PushScreen} options={{headerTintColor:'black',headerBackTitleVisible:false, title:selectedFriend ? "To. "+selectedFriend.name : "", headerTitleAlign: 'center', headerTitleStyle:{fontSize:20, fontWeight:'bold'}, headerStyle:{backgroundColor:'#E9BCBE', height:screenHeight*0.1, borderBottomWidth:2, borderBottomColor:'black'}}}/>
         <Stack.Screen name="AddFriend" component={AddFriend} options={{headerTintColor:'black', headerBackTitleVisible:false, title:'Add Friends',headerTitleAlign: 'center',headerTitleStyle:{fontSize:20, fontWeight:'bold'}, headerStyle:{backgroundColor:'#ABDECB', height:screenHeight*0.1, borderBottomWidth:2, borderBottomColor:'black'}}}/>
-        <Stack.Screen name="Settings" component={Settings} options={{headerTintColor:'black', headerBackTitleVisible:false, title:"Settings",headerTitleAlign: 'center',headerTitleStyle:{fontSize:20, fontWeight:'bold'}, headerStyle:{ height:screenHeight*0.1, borderBottomWidth:2, borderBottomColor:'black'} ,}}/>
+        <Stack.Screen name="Settings" component={Settings} options={{headerTintColor:'black', headerBackTitleVisible:false, title:"Settings",headerTitleAlign: 'center',headerTitleStyle:{fontSize:20, fontWeight:'bold'}, headerStyle:{backgroundColor:'#CE85F8', height:screenHeight*0.1, borderBottomWidth:2, borderBottomColor:'black'} ,}}/>
         <Stack.Screen name="FriendReq" component={FriendReq} options={{headerTintColor:'black', headerBackTitleVisible:false, title:"Request List",headerTitleAlign: 'center',headerTitleStyle:{fontSize:20, fontWeight:'bold'}, headerStyle:{backgroundColor:'#FDEC94', height:screenHeight*0.1, borderBottomWidth:2, borderBottomColor:'black'} ,}}/>
       </Stack.Navigator>
     </StackContext.Provider>

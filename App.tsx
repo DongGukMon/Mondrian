@@ -2,13 +2,13 @@ import React,{useState,useEffect} from 'react';
 import {SafeAreaView, Platform, AppRegistry, Alert} from 'react-native';
 import MyStack from './screen/navContainer/MyStack';
 import Signin from './screen/Signin';
-import InputNumber from './screen/InputNumber';
+import InputProfile from './screen/InputProfile';
 import 'react-native-gesture-handler';
 import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database'
 import firebaseInit from './utils/firebaseInit';
 import { NavigationContainer} from '@react-navigation/native';
-import {alreadySignUp} from "./utils/firebaseCall"
+import {profileUpdate} from "./utils/firebaseCall"
 import PushNotification from "react-native-push-notification";
 import messaging from '@react-native-firebase/messaging';
 import {getEnabled,getLoginChecker,pushCustom} from './utils/localStorage'
@@ -41,22 +41,22 @@ firebaseInit()
 
 const App = () => {
 
-  const [info, setInfo] = useState<any>({uid:"",name:""})
+  const [info, setInfo] = useState<any>({uid:"",name:'',phoneNumber:''})
   const [isLogin,setIsLogin] = useState<any>(false)
-  const [hasNumber, setHasNumber] = useState<any>(true)
+  const [hasName, setHasName] = useState<any>(true)
 
-  const checkNumber = (result:any) => {
+  const checkName = (result:any) => {
     database()
-      .ref('users/' +result.uid+"/phone_number")
+      .ref('users/' +result.uid+"/name")
       .on('value', snapshot=> {
-        setHasNumber(snapshot.val())
+        setHasName(snapshot.val())
       })
   }
 
   const checkIfLoggedIn = () => {
     auth().onAuthStateChanged(
       function(result) {
-        result && (alreadySignUp(result), checkNumber(result), setInfo({uid:result.uid,name:result.displayName}),getToken(result.uid))
+        result && (profileUpdate(result), checkName(result), setInfo({...info,uid:result.uid}),getToken(result.uid))
         setIsLogin(result)
         }
     )
@@ -64,7 +64,7 @@ const App = () => {
 
   const getToken = async (uid:any) => {
     const token = await messaging().getToken();
-    database().ref('add_friend_data/'+uid).update({token:token})
+    database().ref('users/'+uid).update({token:token})
   };
 
 
@@ -75,6 +75,8 @@ const App = () => {
     getEnabled()
     getLoginChecker()
     pushCustom()
+
+    
   },[])
 
 
@@ -82,8 +84,8 @@ const App = () => {
     <NavigationContainer>
       <SafeAreaView style={{flex:1}}>
         {isLogin? 
-          hasNumber ? 
-          <MyStack info={info}/> : <InputNumber info={info}/>
+          hasName ? 
+          <MyStack info={info}/> : <InputProfile info={info}/>
           : <Signin/>
         }
       </SafeAreaView>

@@ -2,13 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>FirebaseAppDelegateProxyEnabled</key>
-	<string>YES</string>
-	<key>FIRAnalyticsDebugEnabled</key>
-	<string>NO</string>
-	<key>FirebaseScreenReportingEnabled</key>
-	<string>NO</string>
-
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -34,12 +27,26 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.594993990605-e1p4k1e7bkir57i4fjtqio7ngt76pmvb</string>
+				<string>com.googleusercontent.apps.594993990605-7i5p23261em8gasdek12so8egjkijli3</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.594993990605-7i5p23261em8gasdek12so8egjkijli3</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>FIRAnalyticsDebugEnabled</key>
+	<string>NO</string>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<string>YES</string>
+	<key>FirebaseScreenReportingEnabled</key>
+	<string>NO</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>

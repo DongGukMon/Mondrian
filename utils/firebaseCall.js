@@ -41,14 +41,15 @@ export async function deleteFriend(myUid,friendUid){
   database().ref('friend_list/'+friendUid+'/'+myUid).remove()
 }
 
-export async function throwRequest(myUid,friendUid, myPhone,myName) {
+export async function throwRequest(myUid,friendUid,myPhone,myName,token) {
   database()
     .ref('request_list/receive/'+friendUid)
     .update({
       [myUid]:{
         phone_number:myPhone,
         uid:myUid,
-        name:myName
+        name:myName,
+        token:token
       }
     });
 
@@ -59,54 +60,67 @@ export async function throwRequest(myUid,friendUid, myPhone,myName) {
   });
 }
 
-export async function setNumber(num, uid, name) {
+export async function cancelRequest(myUid,friendUid) {
   database()
-    .ref('add_friend_data/'+uid)
+    .ref('request_list/receive/'+friendUid+"/"+myUid)
+    .remove()
+  
+  database()
+    .ref('request_list/send/'+myUid+"/"+friendUid)
+    .remove()
+  }    
+
+export async function setName(name, uid) {
+  database()
+    .ref('users/'+uid)
     .update({
-      phone_number:num,
-      uid:uid,
       name:name
     });
-
-  database()
-    .ref('users/' + uid)
-    .update({phone_number:num});
-
 }
 
-export async function editNumber(num, uid) {
-  database()
-    .ref('add_friend_data/'+uid)
-    .update({
-      phone_number:num,
-    });
-
-  database()
-    .ref('users/' + uid)
-    .update({phone_number:num});
-
-}
-
-export async function firstSignIn(result) {
-  database()
-    .ref('users/' + result.user.uid)
-    .set({
-      uid: result.user.uid,
-      gmail: result.user.email,
-      profile_picture: result.additionalUserInfo.profile.picture,
-      name: result.additionalUserInfo.profile.given_name,
-      created_at: Date.now(),
-      last_logged_in: Date.now(),
-      phone_number: ""
-    });
-
-}
-
-export async function alreadySignUp(result) {
+export async function profileUpdate(result) {
   database()
     .ref('users/' + result.uid)
     .update({
-      last_logged_in: Date.now(),
-      profile_picture:result.photoURL
+      last_logged_in: result.metadata.lastSignInTime,
     });
+}
+
+export async function profileCreate(result) {
+  database()
+    .ref('users/' + result.user.uid)
+    .update({
+      created_at:result.user.metadata.creationTime,
+      uid:result.user.uid,
+      phone_number:"010"+(result.user.phoneNumber).substring(5,13)
+    });
+}
+
+export async function deleteAccount(uid) {
+  database()
+    .ref('users/' + uid)
+    .remove()
+
+  database()
+    .ref('friend_list/' + uid)
+    .remove()
+
+    database()
+    .ref('request_list/send/' + uid)
+    .once('value',(snapshot)=>{
+    
+      Object.keys(snapshot.val()).map((item)=>{
+        database().ref('request_list/send/' + item + '/' + uid).remove()
+        database().ref('request_list/receive/' + item + '/' + uid).remove()
+        console.log(item)
+      })
+
+      database()
+        .ref('request_list/receive/' + uid)
+        .remove()
+    
+      database()
+        .ref('request_list/send/' + uid)
+        .remove()
+    })
 }

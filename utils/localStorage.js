@@ -20,7 +20,7 @@ export const setEnabled = async (value) => {
   }
 
 export const getEnabled = async () => {
-  try {
+  try {    
     const value = await AsyncStorage.getItem('isEnabledNotification')
     if(value == null) {
       setEnabled("true")
