@@ -25,10 +25,22 @@ interface Iprops{
 }
 
 messaging().setBackgroundMessageHandler(async (remoteMessage:any) => {
+  console.log(remoteMessage.data)
+
   var isEnabled = await getEnabled()
   var loginChecker = await getLoginChecker()
   if((isEnabled=="true")&&(loginChecker=="true")){
-    PushNotification.localNotification({channelId:"channel-id",title:remoteMessage.data?.title,message:remoteMessage.data?.body,largeIconUrl:remoteMessage.data.imageUrl, picture:remoteMessage.data.imageUrl, data:remoteMessage.data})
+    PushNotification.localNotification({
+      channelId:"channel-id",
+      title:Platform.OS==="android" ?remoteMessage.data?.pushTitle : remoteMessage.data?.title,
+      subtitle:remoteMessage.data?.pushTitle,
+      color:'#CE85F8',
+      smallIcon: "ic_notification",
+      message:remoteMessage.data?.body,
+      picture:Platform.OS==='ios' && remoteMessage.data.imageUrl,
+      largeIconUrl:remoteMessage.data.imageUrl,
+      data:remoteMessage.data
+    })
   }
 });
 
@@ -66,6 +78,7 @@ export default function MyStack(props:Iprops) {
   }
 
   const getFriends = () => {
+    
     Contacts.getAll()
       .then((contacts) => {
         contacts.map((item)=>{
@@ -81,7 +94,8 @@ export default function MyStack(props:Iprops) {
 
             //연락처와 유저풀 비교해서 친구 추가 가능 목록 생성
             Object.values(addData.val()).map((item:any)=>{
-              myContacts[item.phone_number] && (addList[item.uid]={...item})
+              //유저 UID랑 내 UID랑 다를때 && 연락처에 유저 폰넘버가 있을때 && addList에 유저정보를 추가해라
+              (item.uid !== props.info.uid) && myContacts[item.phone_number] && (addList[item.uid]={...item})
             })
 
             friendData.val() && (
@@ -137,19 +151,30 @@ export default function MyStack(props:Iprops) {
       setUserInfo({uid:props.info.uid,myPhone:snapshot.val().phone_number,name:snapshot.val().name,token:snapshot.val().token})
     })
 
-    PushNotification.popInitialNotification((notification) => {
-      notification?.data.type && navigation.navigate(notification?.data.type)
-    });
+    // PushNotification.popInitialNotification((notification) => {
+    //   notification?.data.type && navigation.navigate(notification?.data.type)
+    // });
     
     const unsubscribe = messaging().onMessage(async (remoteMessage:any) => {
-      
+      console.log(remoteMessage.data)
+
       var isEnabled = await getEnabled()
       var loginChecker = await getLoginChecker()
       
       remoteMessage.data.type=="FriendReq" ?
       (navigationAlert(remoteMessage.data.type)) :
       ((isEnabled=="true")&&(loginChecker=="true")&&
-        PushNotification.localNotification({channelId:"channel-id",title:remoteMessage.data?.title,message:remoteMessage.data?.body,largeIconUrl:remoteMessage.data.imageUrl,picture:remoteMessage.data.imageUrl,data:remoteMessage.data}))
+        PushNotification.localNotification({
+          channelId:"channel-id",
+          title:Platform.OS==="android" ?remoteMessage.data?.pushTitle : remoteMessage.data?.title,
+          subtitle:remoteMessage.data?.pushTitle,
+          color:'#CE85F8',
+          smallIcon: "ic_notification",
+          message:remoteMessage.data?.body,
+          picture:Platform.OS==='ios' && remoteMessage.data.imageUrl,
+          largeIconUrl:remoteMessage.data.imageUrl,
+          data:remoteMessage.data
+        }))
        
     });
 
@@ -159,7 +184,7 @@ export default function MyStack(props:Iprops) {
 
 
   return (
-    <StackContext.Provider value={{contactsPermission,setContactsPermission,getFriends,myContacts,setMyContacts,addList,setAddList,userInfo,setUserInfo,requestList,setRequestList,friendList,setFriendList,selectedFriend,setSelectedFriend}}>
+    <StackContext.Provider value={{contactsPermission,getFriends,myContacts,setMyContacts,addList,setAddList,userInfo,setUserInfo,requestList,setRequestList,friendList,setFriendList,selectedFriend,setSelectedFriend}}>
       <Stack.Navigator>
         <Stack.Screen name="Friends" component={Friends} options={({navigation})=>({headerTitleAlign: 'left',headerTitleStyle:{fontSize:24, fontWeight:'bold'}, headerStyle:{backgroundColor:'#E9BCBE', height:screenHeight*0.1, borderBottomWidth:2, borderBottomColor:'black'} , headerRight: ()=>{
           return <View style={{flexDirection:'row', justifyContent:'space-between', width:130, padding:10, backgroundColor:'white', borderRadius:20, marginRight:10}}>
@@ -177,7 +202,7 @@ export default function MyStack(props:Iprops) {
           }
         })}
         />
-        <Stack.Screen name="PushScreen" component={PushScreen} options={{headerTintColor:'black',headerBackTitleVisible:false, title:selectedFriend ? "To. "+selectedFriend.name : "", headerTitleAlign: 'center', headerTitleStyle:{fontSize:20, fontWeight:'bold'}, headerStyle:{backgroundColor:'#E9BCBE', height:screenHeight*0.1, borderBottomWidth:2, borderBottomColor:'black'}}}/>
+        <Stack.Screen name="PushScreen" component={PushScreen} options={{headerTintColor:'black',headerBackTitleVisible:false, title:selectedFriend ? "To. "+selectedFriend.name : "", headerTitleAlign: 'center', headerTitleStyle:{fontSize:20, fontWeight:'bold'}, headerStyle:{backgroundColor:'#CE85F8', height:screenHeight*0.1, borderBottomWidth:2, borderBottomColor:'black'}}}/>
         <Stack.Screen name="AddFriend" component={AddFriend} options={{headerTintColor:'black', headerBackTitleVisible:false, title:'Add Friends',headerTitleAlign: 'center',headerTitleStyle:{fontSize:20, fontWeight:'bold'}, headerStyle:{backgroundColor:'#ABDECB', height:screenHeight*0.1, borderBottomWidth:2, borderBottomColor:'black'}}}/>
         <Stack.Screen name="Settings" component={Settings} options={{headerTintColor:'black', headerBackTitleVisible:false, title:"Settings",headerTitleAlign: 'center',headerTitleStyle:{fontSize:20, fontWeight:'bold'}, headerStyle:{backgroundColor:'#CE85F8', height:screenHeight*0.1, borderBottomWidth:2, borderBottomColor:'black'} ,}}/>
         <Stack.Screen name="FriendReq" component={FriendReq} options={{headerTintColor:'black', headerBackTitleVisible:false, title:"Request List",headerTitleAlign: 'center',headerTitleStyle:{fontSize:20, fontWeight:'bold'}, headerStyle:{backgroundColor:'#FDEC94', height:screenHeight*0.1, borderBottomWidth:2, borderBottomColor:'black'} ,}}/>

@@ -1,14 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const defaultPush = [
-  {icon:require('../assets/icons/delivery-man.png'), iconUrl:'https://cdn-icons-png.flaticon.com/512/2830/2830175.png', title:"배달",body:"배고픈데 배민 시켜먹자"},
-  {icon:require('../assets/icons/cheers.png'), iconUrl:'https://cdn-icons.flaticon.com/png/512/2058/premium/2058805.png?token=exp=1639145839~hmac=234bad7409f75ac8be3c226e4a3b08e0', title:"술",body:"술 먹으러 가자"},
-  {icon:require('../assets/icons/fried-rice.png'), iconUrl:'https://cdn-icons.flaticon.com/png/512/2515/premium/2515157.png?token=exp=1639145859~hmac=73d0421d6efd58c43f758d7bef9a6f01', title:"밥",body:"밥먹었음? 밥먹으러 가자"},
-  {icon:require('../assets/icons/coffee-cup.png'), iconUrl:'https://cdn-icons-png.flaticon.com/512/751/751621.png', title:"카페",body:"카페가실?"},
-  {icon:require('../assets/icons/game-controller.png'), iconUrl:'https://cdn-icons-png.flaticon.com/512/2972/2972351.png', title:"게임",body:"협곡에서 만나"},
-  {icon:require('../assets/icons/steering-wheel.png'), iconUrl:'https://cdn-icons-png.flaticon.com/512/1581/1581955.png', title:"드라이브",body:"답답한데 오늘 드라이브 어때"}
+  {icon:require('../assets/icons/delivery-man.png'), iconUrl:'http://drive.google.com/uc?export=view&id=1blpB7HcKD6kuGJ774Wigmw-ZQfkuWSlz', title:"배달",body:"배고픈데 배민 시켜먹자"},
+  {icon:require('../assets/icons/cheers.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1ZPcQrpRNZqDBGQdxj7i3MIDCVApqf-Kz', title:"술",body:"술 먹으러 가자"},
+  {icon:require('../assets/icons/fried-rice.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1QAEgXvzCygt75rx6HiKJhI9fRmcNcnUE', title:"밥",body:"밥먹었음? 밥먹으러 가자"},
+  {icon:require('../assets/icons/coffee-cup.png'), iconUrl:'https://drive.google.com/uc?export=view&id=18ItEVVR-K8moYEudidUDCxhRpdJz-BAY', title:"카페",body:"카페가실?"},
+  {icon:require('../assets/icons/game-controller.png'), iconUrl:'https://drive.google.com/uc?export=view&id=16hC61ICT0kTCxpVDr3St8yisITo8Tbms', title:"게임",body:"협곡에서 만나"},
+  {icon:require('../assets/icons/steering-wheel.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1jDRXir24Vv60-3E26TIWJlY-KlXbHRWx', title:"드라이브",body:"답답한데 오늘 드라이브 어때"}
 ]
-
 
 export const setEnabled = async (value) => {
     try {

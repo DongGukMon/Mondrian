@@ -12,7 +12,7 @@
           "to": target,
           "data":{
             "imageUrl": 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/KakaoTalk_logo.svg/600px-KakaoTalk_logo.svg.png',
-            "title": "A-YO",
+            "title": "Mondrian",
             "body": "새로운 친구 요청이 왔습니다",
             "type": "FriendReq",
           },
@@ -39,7 +39,7 @@
         "to": target,
         "data":{
           "imageUrl": 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/KakaoTalk_logo.svg/600px-KakaoTalk_logo.svg.png',
-          "title": "A-YO",
+          "title": "Mondrian",
           "body": name+"님이 요청을 수락하셨습니다",
           "type": "acceptReq",
         },
@@ -64,7 +64,8 @@
         "to": target,
         "data":{
           "imageUrl": purpose.iconUrl,
-          "title": "A-YO",
+          "title": "Mondrian",
+          "pushTitle":purpose.title,
           "body": name+": "+purpose.body
         },
         "notification":{

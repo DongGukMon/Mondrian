@@ -1,7 +1,10 @@
 package com.ayo;
 
+
 import com.facebook.react.ReactActivity;
 import android.os.Bundle;
+
+import org.devio.rn.splashscreen.SplashScreen; // splash
 
 public class MainActivity extends ReactActivity {
 
@@ -16,6 +19,7 @@ public class MainActivity extends ReactActivity {
 
   @Override
 protected void onCreate(Bundle savedInstanceState) {
+  SplashScreen.show(this); //splash
   super.onCreate(null);
 }
 }

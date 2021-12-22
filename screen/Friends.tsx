@@ -25,7 +25,7 @@ const screenHeight= Dimensions.get('screen').height
 const Friends = ({navigation}:any) => {
   
   const headerHeight = useHeaderHeight();
-  const{userInfo,contactsPermission,setContactsPermission, friendList,setSelectedFriend,getFriends} = useContext(StackContext)
+  const{userInfo,contactsPermission,friendList,setSelectedFriend,getFriends} = useContext(StackContext)
 
 
   const deleteAlert = (myUid:string,friendUid:string,friendName:string,phone_number:string)=>{
@@ -71,7 +71,8 @@ const Friends = ({navigation}:any) => {
 
 
   useEffect(()=>{
-    contactsPermission && getFriends()
+    (Platform.OS ==='android') ? (contactsPermission && getFriends()) : getFriends()
+    
   },[])
 
   return (
@@ -90,12 +91,15 @@ const Friends = ({navigation}:any) => {
           />
            : 
         <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-            {contactsPermission ?
+            {
+            (Platform.OS === "android") ?
+            (contactsPermission ?
             <Text style={{fontSize:16, fontWeight:'bold', textAlign:'center'}}>친구에게 Mondrian을 소개해보세요!</Text> :
               <View style={{alignItems:'center'}}>
                 <Text>연락처 접근 권한을 승인해야 친구 목록이 동기화 됩니다.</Text>
-                <Text>스마트폰 설정에서 Mondrian의 연락처 권한을 승인해주세요.</Text>
-              </View>
+                <Text>스마트폰 설정에서 Mondrian의 연락처 접근 권한을 승인해주세요.</Text>
+              </View>) :
+               (<Text style={{fontSize:16, fontWeight:'bold', textAlign:'center'}}>친구에게 Mondrian을 소개해보세요!</Text>)
             }
         </View>
         }

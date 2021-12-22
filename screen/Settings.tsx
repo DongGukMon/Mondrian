@@ -1,6 +1,6 @@
 
 import { FirebaseAuthTypes } from '@react-native-firebase/auth';
-import React,{useState,useContext, useEffect} from 'react';
+import React,{useState,useContext, useEffect, useRef} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -8,7 +8,6 @@ import {
   StyleSheet,
   Text,
   View,
-  Button,
   Alert,
   TextInput,
   Dimensions,
@@ -31,12 +30,13 @@ const h=Dimensions.get('screen').height
 const Settings = () => {
 
   
-  const {userInfo} = useContext(StackContext)
+  const {userInfo,setUserInfo} = useContext(StackContext)
   const [myName,setMyName]=useState<any>(userInfo.name)
   const [isEnabled,setIsEnabled] = useState(true)
   const [confirm, setConfirm] = useState<any>('')
-  const [nameEditState, setNameEditState] =  useState<any>({editable:false,focusing:false,buttonView:false})
+  const [nameEditState, setNameEditState]:any =  useState<any>({editable:false,focusing:false})
 
+  const inputRef = useRef<any>();
   
 
   async function signInWithPhoneNumber() {
@@ -71,9 +71,14 @@ const Settings = () => {
     }
   }
 
+
   useEffect(()=>{
     getSettingEnabled()
   },[])
+
+  useEffect(()=>{
+    inputRef.current.focus()
+  },[nameEditState])
 
   return (
     <SafeAreaView style={{flex:1,alignItems:'center',justifyContent:'center'}}>
@@ -84,17 +89,21 @@ const Settings = () => {
             
             <View style={{flexDirection:'row'}}>
               <Text style={styles.settingTitle}>Name</Text>
-              <TouchableOpacity onPress={()=>{setMyName(userInfo.name), setNameEditState({...nameEditState,editable:!nameEditState.editable,focusing:!nameEditState.focusing})}} style={{paddingLeft:5}}>
+              <TouchableOpacity onPress={()=>{setMyName(userInfo.name), setNameEditState({editable:!nameEditState.editable,focusing:!nameEditState.focusing})}} style={{paddingLeft:5}}>
                 <Icon name="create-outline" size={24} color="black" />
+                {/* <Image style={{width:100,height:100}} source={{uri:'http://drive.google.com/uc?export=view&id=1blpB7HcKD6kuGJ774Wigmw-ZQfkuWSlz'}}/> */}
               </TouchableOpacity>
             </View>
 
             <View style={{flexDirection:'row', width:w*0.85, justifyContent:'space-between'}}>
-              <TextInput editable={nameEditState.editable} selectTextOnFocus={nameEditState.focusing} style={{paddingLeft:15,borderWidth:3, borderRadius:10, width:w*0.65,height:45, backgroundColor:'#FDEC94', fontSize:18}} maxLength={13} onChangeText={text=>setMyName(text)} value={myName}/>              
-              <TouchableOpacity style={{ ...styles.editButton, width:w*0.15,height:45}} onPress={()=>{setNameEditState({...nameEditState,editable:!nameEditState.editable,focusing:!nameEditState.focusing})}}>
-                <Text style={{fontSize:15, color:'black'}}> Edit </Text>
-              </TouchableOpacity>
+              <TextInput ref={inputRef} editable={nameEditState.editable} selectTextOnFocus={nameEditState.focusing} style={{paddingLeft:15,borderWidth:3, borderRadius:10, width:w*0.65,height:45, backgroundColor: !nameEditState.editable ? '#FDEC94' : 'white', fontSize:18}} maxLength={13} onChangeText={text=>setMyName(text)} value={myName}/>              
+              {nameEditState.editable &&
+                <TouchableOpacity style={{ ...styles.editButton, width:w*0.15,height:45}} onPress={()=>{setName(myName,userInfo.uid),setUserInfo({...userInfo,name:myName}),setNameEditState({editable:!nameEditState.editable,focusing:!nameEditState.focusing})}}>
+                  <Text style={{fontSize:15, color:'black'}}> Edit </Text>
+                </TouchableOpacity>
+              }
             </View>
+
           </View>
 
           <View style={{height:h*0.12,width:w*0.85,justifyContent:'space-between',alignContent:'center', alignItems:'center', flexDirection:'row'}}>

@@ -22,24 +22,34 @@ import { goPush } from '../utils/notification';
 import {setPushCounter,removeValue, pushCustom, setPushCustom} from '../utils/localStorage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FlatList } from 'react-native-gesture-handler';
+
 const screenWidth= Dimensions.get('screen').width
 const screenHeight= Dimensions.get('screen').height > 800 ?  Dimensions.get('screen').height : 800
 
 const basicIconList = [
-  {icon:require('../assets/icons/delivery-man.png'), iconUrl:'https://cdn-icons-png.flaticon.com/512/2830/2830175.png', description:"배달"},
-  {icon:require('../assets/icons/cheers.png'), iconUrl:'https://cdn-icons.flaticon.com/png/512/2058/premium/2058805.png?token=exp=1639145839~hmac=234bad7409f75ac8be3c226e4a3b08e0', description:"술"},
-  {icon:require('../assets/icons/fried-rice.png'), iconUrl:'https://cdn-icons.flaticon.com/png/512/2515/premium/2515157.png?token=exp=1639145859~hmac=73d0421d6efd58c43f758d7bef9a6f01', description:"밥"},
-  {icon:require('../assets/icons/coffee-cup.png'), iconUrl:'https://cdn-icons-png.flaticon.com/512/751/751621.png', description:"카페"},
-  {icon:require('../assets/icons/game-controller.png'), iconUrl:'https://cdn-icons-png.flaticon.com/512/2972/2972351.png', description:"게임"},
-  {icon:require('../assets/icons/steering-wheel.png'), iconUrl:'https://cdn-icons-png.flaticon.com/512/1581/1581955.png', description:"드라이브"},
+  {icon:require('../assets/icons/delivery-man.png'), iconUrl:'http://drive.google.com/uc?export=view&id=1blpB7HcKD6kuGJ774Wigmw-ZQfkuWSlz', description:"배달"},
+  {icon:require('../assets/icons/cheers.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1ZPcQrpRNZqDBGQdxj7i3MIDCVApqf-Kz', description:"술"},
+  {icon:require('../assets/icons/fried-rice.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1QAEgXvzCygt75rx6HiKJhI9fRmcNcnUE', description:"밥"},
+  {icon:require('../assets/icons/coffee-cup.png'), iconUrl:'https://drive.google.com/uc?export=view&id=18ItEVVR-K8moYEudidUDCxhRpdJz-BAY', description:"카페"},
+  {icon:require('../assets/icons/game-controller.png'), iconUrl:'https://drive.google.com/uc?export=view&id=16hC61ICT0kTCxpVDr3St8yisITo8Tbms', description:"게임"},
+  {icon:require('../assets/icons/steering-wheel.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1jDRXir24Vv60-3E26TIWJlY-KlXbHRWx', description:"드라이브"},
   
-  {icon:require('../assets/icons/open-book.png'), iconUrl:'https://cdn-icons.flaticon.com/png/512/2280/premium/2280151.png?token=exp=1639146939~hmac=c6a5b554815e5ef1a7c3d974a52059d1', description:"공부"},
-  {icon:require('../assets/icons/destination.png'), iconUrl:'https://cdn-icons-png.flaticon.com/512/854/854996.png', description:"여행"},
-  {icon:require('../assets/icons/excercise.png'), iconUrl:'https://cdn-icons.flaticon.com/png/512/3136/premium/3136167.png?token=exp=1639207505~hmac=c67405fa71b8d3968b9102f00dea1dee', description:"운동"},
-  {icon:require('../assets/icons/bored.png'), iconUrl:'https://cdn-icons.flaticon.com/png/512/3688/premium/3688068.png?token=exp=1639207326~hmac=f3806682652772152f0258357bc372f8', description:"피곤"},
-  {icon:require('../assets/icons/hey.png'), iconUrl:'https://cdn-icons.flaticon.com/png/512/4081/premium/4081196.png?token=exp=1639208182~hmac=02bb95a326a0e3505a90b172e10c1f75', description:"헤이"},
-  {icon:require('../assets/icons/yes.png'), iconUrl:'https://cdn-icons.flaticon.com/png/512/3677/premium/3677088.png?token=exp=1639207065~hmac=460c91ee9f776253579305571a0c8944', description:"좋아"},
-  {icon:require('../assets/icons/no.png'), iconUrl:'https://cdn-icons.flaticon.com/png/512/1358/premium/1358126.png?token=exp=1639207102~hmac=97218bbbce4900e4c6d0d751b3fc7894', description:"싫어"}
+  {icon:require('../assets/icons/open-book.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1WydpnpSPJ2JQx0htOTY7TF4xN2x9QZkT', description:"공부"},
+  {icon:require('../assets/icons/destination.png'), iconUrl:'https://drive.google.com/uc?export=view&id=13cIKhg2CsNqmEiGi35JM3WxdmcUG3j5i', description:"여행"},
+  {icon:require('../assets/icons/excercise.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1sj0YuwiK8-E49TfymwDdhGpE-z6WoU8_', description:"운동"},
+  {icon:require('../assets/icons/bored.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1GWa1Eanl9HfOAZTpBs_3DwDre3ujJiEn', description:"피곤"},
+  {icon:require('../assets/icons/animal.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1uP2uB3DQfM1iuMKfqNdfB_0IJewfgx50', description:"강아지"},
+  {icon:require('../assets/icons/cake.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1Uo_Hx5cSpS9wtboE_vHi4JIO0EW4p43M', description:"디저트"},
+  {icon:require('../assets/icons/call.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1R0DByvrILepjHDzYrQueA2RPBr0WgFZv', description:"전화"},
+  {icon:require('../assets/icons/insomnia.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1LLW9KqWM5a_tVQOLPZBsHkbmhzS5PCkG', description:"잠자리"},
+  {icon:require('../assets/icons/smoking.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1I9ASrTiBuknmmt_Pt-Z24Dno1_74JCa3', description:"담배"},
+  
+  {icon:require('../assets/icons/think.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1emgIrIXBIcHH12ZV5PGuA7yyoo1hhFuv', description:"고민"},
+  {icon:require('../assets/icons/hey.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1ndTZU5fPCZCK1vGMx1jESuyTW5t9ulBO', description:"헤이"},
+  {icon:require('../assets/icons/yes.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1V0j-dLdX7EDC3RUxywC1IUf-kj8ghoLf', description:"좋아"},
+  {icon:require('../assets/icons/no.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1HmsuBbJJDvrfnz8JwePaAq4sDt08F2Ya', description:"싫어"},
+
+  {icon:require('../assets/icons/no_icon.png'), iconUrl:'https://cdn-icons.flaticon.com/png/512/1358/premium/1358126.png?token=exp=1639207102~hmac=97218bbbce4900e4c6d0d751b3fc7894', description:"없음"}
 
 ]
 
@@ -61,6 +71,7 @@ const PushScreen = () => {
   }
 
   const rend_item =(item:any,index:number)=>{
+    
     const pushItem = (
       <View style={{...styles.pushStyle, overflow: Platform.OS === 'android' ? 'hidden' : 'visible', width:screenWidth*0.40, height:screenWidth*0.40,backgroundColor:(isDisabled&&!item.checker) ? 'gray' : 'white'}}>
           <Image style={{width:'70%',height:'70%'}} source={item.icon}/>
@@ -68,6 +79,7 @@ const PushScreen = () => {
     )
 
     const pressItem=async()=>{
+
 
       const nowTime = Date.now()
       try {
@@ -90,7 +102,6 @@ const PushScreen = () => {
         else{
             goPush(selectedFriend.token,userInfo.name,item)
             setPushCounter(selectedFriend.uid,JSON.parse(value).count,JSON.parse(value).time)
-            console.log(value)
         }
     
       } catch(e) {

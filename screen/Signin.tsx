@@ -75,7 +75,7 @@ const Signin = () => {
           <View style={{height:h*0.15,justifyContent:'center',alignContent:'center'}}>
             <View style={{height:h*0.03}}/>
             <Text style={{fontSize:32, textAlign:'center',color:'black', fontWeight:'bold'}}>Throw Messages</Text>
-            <Text style={{fontSize:28, textAlign:'center',color:'black', fontWeight:'bold'}}>*-Like-*</Text>
+            <Text style={{fontSize:28, textAlign:'center',color:'black', fontWeight:'bold'}}>*-Like a-*</Text>
             <Text style={{fontSize:32, textAlign:'center',color:'black', fontWeight:'bold'}}>Straight Line</Text>
           </View>
           {confirm ?

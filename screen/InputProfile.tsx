@@ -34,7 +34,7 @@ const InputProfile = (props:Iprops) => {
           <View style={{height:h*0.05}}/>  
           <View style={{height:h*0.15,justifyContent:'center',alignContent:'center'}}>  
             <Text style={{fontSize:32, textAlign:'center',color:'black', fontWeight:'bold'}}>Throw Messages</Text>
-            <Text style={{fontSize:28, textAlign:'center',color:'black', fontWeight:'bold'}}>*-Like-*</Text>
+            <Text style={{fontSize:28, textAlign:'center',color:'black', fontWeight:'bold'}}>*-Like a-*</Text>
             <Text style={{fontSize:32, textAlign:'center',color:'black', fontWeight:'bold'}}>Straight Line</Text>
           </View>
           <View style={{height:h*0.33, alignItems:'center', justifyContent:'center'}}>

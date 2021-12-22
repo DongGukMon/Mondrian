@@ -12,6 +12,7 @@ import {profileUpdate} from "./utils/firebaseCall"
 import PushNotification from "react-native-push-notification";
 import messaging from '@react-native-firebase/messaging';
 import {getEnabled,getLoginChecker,pushCustom} from './utils/localStorage'
+import SplashScreen from 'react-native-splash-screen'
 
 PushNotification.createChannel(
   {
@@ -75,8 +76,10 @@ const App = () => {
     getEnabled()
     getLoginChecker()
     pushCustom()
+  },[])
 
-    
+  useEffect(()=>{
+    setTimeout(()=>SplashScreen.hide(),1500)
   },[])
 
 
