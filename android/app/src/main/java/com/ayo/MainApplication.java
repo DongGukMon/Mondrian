@@ -1,4 +1,4 @@
-package com.ayo;
+package com.fleeo.mondrian;
 
 import android.app.Application;
 import android.content.Context;

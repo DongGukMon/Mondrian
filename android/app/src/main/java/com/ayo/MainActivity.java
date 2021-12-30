@@ -1,4 +1,4 @@
-package com.ayo;
+package com.fleeo.mondrian;
 
 
 import com.facebook.react.ReactActivity;

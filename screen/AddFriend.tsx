@@ -18,7 +18,7 @@ const screenHeight= Dimensions.get('screen').height
 
 const AddFriend = () => {
 
-  const {userInfo,addList} = useContext(StackContext)
+  const {userInfo,addList,getFriends,isRefreshing,setIsRefreshing} = useContext(StackContext)
   const [sendedReq,setSendedReq]=useState<any>({})
   const headerHeight = useHeaderHeight();
   
@@ -80,6 +80,11 @@ const AddFriend = () => {
     )
   }
 
+  const listRefresh=()=>{
+    setIsRefreshing(true)
+    getFriends()
+  }
+
 
   useEffect(()=>{
     database().ref('request_list/send/'+userInfo.uid).on('value',snapshot=>{
@@ -105,6 +110,8 @@ const AddFriend = () => {
         animationType={AnimationType.SlideFromBottom}
         animationDuration={1000}
         contentContainerStyle={{minHeight:screenHeight-(headerHeight*3)}}
+        refreshing={isRefreshing}
+        onRefresh={listRefresh}
       />
       : 
       <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>

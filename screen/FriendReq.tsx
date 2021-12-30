@@ -18,6 +18,7 @@ const FriendReq = () => {
 
 
   const {userInfo,requestList} = useContext(StackContext)
+  
 
   const headerHeight = useHeaderHeight();
 

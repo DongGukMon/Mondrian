@@ -23,6 +23,25 @@ PushNotification.createChannel(
   (created) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
 );
 
+messaging().setBackgroundMessageHandler(async (remoteMessage:any) => {
+
+  var isEnabled = await getEnabled()
+  var loginChecker = await getLoginChecker()
+  if((isEnabled=="true")&&(loginChecker=="true")){
+    PushNotification.localNotification({
+      channelId:"channel-id",
+      title:Platform.OS==="android" ?remoteMessage.data?.pushTitle : remoteMessage.data?.title,
+      subtitle:remoteMessage.data?.pushTitle,
+      color:'#CE85F8',
+      smallIcon: "ic_notification",
+      message:remoteMessage.data?.body,
+      picture:Platform.OS==='ios' && remoteMessage.data.imageUrl,
+      largeIconUrl:remoteMessage.data.imageUrl,
+      data:remoteMessage.data
+    })
+  }
+});
+
 async function requestUserPermission() {
   const authStatus = await messaging().requestPermission();
   const enabled =

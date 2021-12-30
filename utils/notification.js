@@ -11,7 +11,6 @@
         body: JSON.stringify({
           "to": target,
           "data":{
-            "imageUrl": 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/KakaoTalk_logo.svg/600px-KakaoTalk_logo.svg.png',
             "title": "Mondrian",
             "body": "새로운 친구 요청이 왔습니다",
             "type": "FriendReq",
@@ -25,8 +24,8 @@
  }   
 
  export const acceptRequest =(target,name)=>{
-   console.log(target)
-   console.log(name)
+  //  console.log(target)
+  //  console.log(name)
 
   fetch('https://fcm.googleapis.com/fcm/send', {
       method: 'POST',
@@ -38,7 +37,6 @@
       body: JSON.stringify({
         "to": target,
         "data":{
-          "imageUrl": 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/KakaoTalk_logo.svg/600px-KakaoTalk_logo.svg.png',
           "title": "Mondrian",
           "body": name+"님이 요청을 수락하셨습니다",
           "type": "acceptReq",

@@ -25,7 +25,7 @@ const screenHeight= Dimensions.get('screen').height
 const Friends = ({navigation}:any) => {
   
   const headerHeight = useHeaderHeight();
-  const{userInfo,contactsPermission,friendList,setSelectedFriend,getFriends} = useContext(StackContext)
+  const{userInfo,contactsPermission,friendList,setSelectedFriend,getFriends,isRefreshing,setIsRefreshing} = useContext(StackContext)
 
 
   const deleteAlert = (myUid:string,friendUid:string,friendName:string,phone_number:string)=>{
@@ -69,6 +69,11 @@ const Friends = ({navigation}:any) => {
     )
   }
 
+  const listRefresh=()=>{
+    setIsRefreshing(true)
+    getFriends()
+  }
+
 
   useEffect(()=>{
     (Platform.OS ==='android') ? (contactsPermission && getFriends()) : getFriends()
@@ -88,6 +93,8 @@ const Friends = ({navigation}:any) => {
             animationDuration={1000}
             // keyExtractor={(index:any) => index}
             contentContainerStyle={{minHeight:screenHeight-(headerHeight*3)}}
+            refreshing={isRefreshing}
+            onRefresh={listRefresh}
           />
            : 
         <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>

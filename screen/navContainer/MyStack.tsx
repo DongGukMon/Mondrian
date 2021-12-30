@@ -24,25 +24,24 @@ interface Iprops{
   info:any
 }
 
-messaging().setBackgroundMessageHandler(async (remoteMessage:any) => {
-  console.log(remoteMessage.data)
+// messaging().setBackgroundMessageHandler(async (remoteMessage:any) => {
 
-  var isEnabled = await getEnabled()
-  var loginChecker = await getLoginChecker()
-  if((isEnabled=="true")&&(loginChecker=="true")){
-    PushNotification.localNotification({
-      channelId:"channel-id",
-      title:Platform.OS==="android" ?remoteMessage.data?.pushTitle : remoteMessage.data?.title,
-      subtitle:remoteMessage.data?.pushTitle,
-      color:'#CE85F8',
-      smallIcon: "ic_notification",
-      message:remoteMessage.data?.body,
-      picture:Platform.OS==='ios' && remoteMessage.data.imageUrl,
-      largeIconUrl:remoteMessage.data.imageUrl,
-      data:remoteMessage.data
-    })
-  }
-});
+//   var isEnabled = await getEnabled()
+//   var loginChecker = await getLoginChecker()
+//   if((isEnabled=="true")&&(loginChecker=="true")){
+//     PushNotification.localNotification({
+//       channelId:"channel-id",
+//       title:Platform.OS==="android" ?remoteMessage.data?.pushTitle : remoteMessage.data?.title,
+//       subtitle:remoteMessage.data?.pushTitle,
+//       color:'#CE85F8',
+//       smallIcon: "ic_notification",
+//       message:remoteMessage.data?.body,
+//       picture:Platform.OS==='ios' && remoteMessage.data.imageUrl,
+//       largeIconUrl:remoteMessage.data.imageUrl,
+//       data:remoteMessage.data
+//     })
+//   }
+// });
 
 
 export default function MyStack(props:Iprops) {
@@ -55,7 +54,11 @@ export default function MyStack(props:Iprops) {
   const [selectedFriend,setSelectedFriend] = useState<any>({})
   
   const [contactsPermission,setContactsPermission] = useState<boolean>(false)
-  // const [contactPermission, setContactsPermission] = useState<any>
+
+  const [isRefreshing,setIsRefreshing] = useState(false)
+
+  //푸시 스크린에 버튼 disable 설정 스테이트 (10회/40초 발송 제한)
+  const[isDisabled,setIsDisabled] =useState(false)
 
   const navigation = useNavigation()
   
@@ -111,6 +114,8 @@ export default function MyStack(props:Iprops) {
             )
             //친구추가 가능 목록 setState
             setAddList(addList)
+
+            setIsRefreshing(false)
           })
         })
       })
@@ -126,10 +131,12 @@ export default function MyStack(props:Iprops) {
     database().ref('request_list/receive/'+props.info.uid).on('value',snapshot=>{
       setRequestList([])
       snapshot.val() && setRequestList(Object.values(snapshot.val()))
+      setIsRefreshing(false)
     })
   };
 
   useEffect(()=>{
+
     if (Platform.OS === 'android') {
 
       PermissionsAndroid.request(
@@ -184,7 +191,7 @@ export default function MyStack(props:Iprops) {
 
 
   return (
-    <StackContext.Provider value={{contactsPermission,getFriends,myContacts,setMyContacts,addList,setAddList,userInfo,setUserInfo,requestList,setRequestList,friendList,setFriendList,selectedFriend,setSelectedFriend}}>
+    <StackContext.Provider value={{isDisabled,setIsDisabled,contactsPermission,getFriends,getRequest,isRefreshing,setIsRefreshing, myContacts,setMyContacts,addList,setAddList,userInfo,setUserInfo,requestList,setRequestList,friendList,setFriendList,selectedFriend,setSelectedFriend}}>
       <Stack.Navigator>
         <Stack.Screen name="Friends" component={Friends} options={({navigation})=>({headerTitleAlign: 'left',headerTitleStyle:{fontSize:24, fontWeight:'bold'}, headerStyle:{backgroundColor:'#E9BCBE', height:screenHeight*0.1, borderBottomWidth:2, borderBottomColor:'black'} , headerRight: ()=>{
           return <View style={{flexDirection:'row', justifyContent:'space-between', width:130, padding:10, backgroundColor:'white', borderRadius:20, marginRight:10}}>

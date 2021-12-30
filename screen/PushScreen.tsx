@@ -44,6 +44,9 @@ const basicIconList = [
   {icon:require('../assets/icons/insomnia.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1LLW9KqWM5a_tVQOLPZBsHkbmhzS5PCkG', description:"잠자리"},
   {icon:require('../assets/icons/smoking.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1I9ASrTiBuknmmt_Pt-Z24Dno1_74JCa3', description:"담배"},
   
+  {icon:require('../assets/icons/hand.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1YbldvUpktaTBgIrtVVf5V6kK4Jg0KhO7', description:"손바닥"},
+  {icon:require('../assets/icons/stop.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1UWNZw34tPKWfAJfbO1Mg8Jf27yGwDHI8', description:"멈춰"},
+  {icon:require('../assets/icons/brotherhood.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1-KhponwzzjqBqhNrvkb07Pse5mFQXdaY', description:"사랑해"},
   {icon:require('../assets/icons/think.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1emgIrIXBIcHH12ZV5PGuA7yyoo1hhFuv', description:"고민"},
   {icon:require('../assets/icons/hey.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1ndTZU5fPCZCK1vGMx1jESuyTW5t9ulBO', description:"헤이"},
   {icon:require('../assets/icons/yes.png'), iconUrl:'https://drive.google.com/uc?export=view&id=1V0j-dLdX7EDC3RUxywC1IUf-kj8ghoLf', description:"좋아"},
@@ -56,8 +59,7 @@ const basicIconList = [
 
 const PushScreen = () => {
 
-  const {selectedFriend, userInfo} = useContext(StackContext);
-  const [isDisabled,setIsDisabled] = useState<any>(false)
+  const {selectedFriend, userInfo,isDisabled,setIsDisabled} = useContext(StackContext);
   const [modalState, setModalState] = useState<any>({isVisible:false,data:null})
   const [pushList, setPushList] = useState<any>(null)
   const [editData, setEditData] =useState<any>({title:'',body:'',icon:''})
@@ -159,6 +161,10 @@ const PushScreen = () => {
         setIsDisabled(false)
       }
     })
+  
+  },[])
+
+  useEffect(()=>{
     getPushList()
     // removeValue('pushData')
   },[])
