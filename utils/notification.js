@@ -15,10 +15,11 @@
             "body": "새로운 친구 요청이 왔습니다",
             "type": "FriendReq",
           },
-          "notification":{
-            content_available: true,
-          },
-          "priority":"high"
+        // "notification":{
+        //   content_available: true,
+        // },
+        "priority":"high",
+        "content_available": true
         })
         })
  }   
@@ -41,10 +42,11 @@
           "body": name+"님이 요청을 수락하셨습니다",
           "type": "acceptReq",
         },
-        "notification":{
-          content_available: true,
-        },
-        "priority":"high"
+        // "notification":{
+        //   content_available: true,
+        // },
+        "priority":"high",
+        "content_available": true
       })
       })
 }   
@@ -66,10 +68,11 @@
           "pushTitle":purpose.title,
           "body": name+": "+purpose.body
         },
-        "notification":{
-          content_available: true,
-        },
-        "priority":"high"
+        // "notification":{
+          // content_available: true,
+        // },
+        "priority":"high",
+        "content_available": true
       })
       })
 }   
