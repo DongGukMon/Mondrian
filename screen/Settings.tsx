@@ -15,14 +15,19 @@ import {
   Modal,
   TouchableOpacity,
   Image,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  Platform,
+  Linking,
+  AppState
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
-import { setName, deleteAccount } from '../utils/firebaseCall';
+import { setName, deleteAccount, whenLogedOut } from '../utils/firebaseCall';
 import { StackContext } from '../utils/StackContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {setEnabled,removeValue} from '../utils/localStorage';
 import Icon from 'react-native-vector-icons/Ionicons';
+import messaging from '@react-native-firebase/messaging';
+
 
 const personalInfoText =[
   {
@@ -63,11 +68,11 @@ const personalInfoText =[
   },
   {
     title:"제 10조 (개인정보 보호책임자)",
-    body: "이메일: zolzac2015@gmil.com"
+    body: "이메일: zolzac2015@gmail.com"
   },
   {
     title:"제 11조 (개인정보 열람청구)",
-    body: "이메일: zolzac2015@gmil.com"
+    body: "이메일: zolzac2015@gmail.com"
   }
 ]
 
@@ -144,9 +149,25 @@ const Settings = () => {
     }
   }
 
+  const checkNotificationStatus = async() =>{
+
+        const authStatus = await messaging().hasPermission();
+        console.log(authStatus)
+        if(authStatus === messaging.AuthorizationStatus.AUTHORIZED) {
+            setIsEnabled(true)
+        }else{
+            setIsEnabled(false)
+        }
+      }
+    
+
 
   useEffect(()=>{
-    getSettingEnabled()
+    //  stateSubscription.remove()
+    const stateSubscription = AppState.addEventListener('change',()=>AppState.currentState==='active' && checkNotificationStatus())
+    Platform.OS ==='android' ? getSettingEnabled() : checkNotificationStatus()
+
+    return ()=>{stateSubscription.remove()}
   },[])
 
   useEffect(()=>{
@@ -186,7 +207,7 @@ const Settings = () => {
                 trackColor={{ false: "#767577", true: "#81b0ff" }}
                 thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
                 ios_backgroundColor="#3e3e3e"
-                onValueChange={()=>{setIsEnabled(!isEnabled), setEnabled(JSON.stringify(!isEnabled))}}
+                onValueChange={()=>{Platform.OS == 'android' ? (setEnabled(JSON.stringify(!isEnabled)),setIsEnabled(!isEnabled)) : Linking.openURL('App-Prefs:NOTIFICATIONS_ID&path=org.reactjs.native.example.AYO')}}
                 value={isEnabled}
               />
             </View>
@@ -212,7 +233,7 @@ const Settings = () => {
         
 
         <View style={{height:h*0.15, justifyContent:'flex-end',alignItems:'flex-end'}}>
-          <TouchableOpacity style={{borderWidth:1,borderRadius:5, padding:5}} onPress={()=>{removeValue("loginChecker"), auth().signOut()}}>
+          <TouchableOpacity style={{borderWidth:1,borderRadius:5, padding:5}} onPress={()=>{whenLogedOut(userInfo.uid), messaging().deleteToken() ,auth().signOut()}}>
             <Text style={{color:'black'}}>Log out</Text>
           </TouchableOpacity>
         </View>

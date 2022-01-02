@@ -7,7 +7,7 @@ import firebaseInit from '../utils/firebaseInit';
 import {StackContext} from '../utils/StackContext';
 import { AnimatedFlatList, AnimationType } from 'flatlist-intro-animations';
 import { useHeaderHeight } from '@react-navigation/elements';
-import {addRequest} from "../utils/notification"
+import {addRequestAndroid,addRequestIos} from "../utils/notification"
 import {throwRequest, cancelRequest} from '../utils/firebaseCall'
 
 
@@ -42,6 +42,7 @@ const AddFriend = () => {
   }
 
   const rend_item =(item:any)=>{
+    const addRequest = item.item.os === 'android' ? addRequestAndroid : addRequestIos
 
     const pushItem = (
       <View style={{...styles.addStyle, overflow: Platform.OS === 'android' ? 'hidden' : 'visible', width:screenWidth*0.8, height:screenWidth*0.30, backgroundColor: (sendedReq && sendedReq[item.item.uid]) ? '#CE85F8' : '#FDEC94'}}>
@@ -56,11 +57,11 @@ const AddFriend = () => {
           Alert.alert("이미 친구 요청 했습니다.") 
           :(
             addRequest(item.item.token),
-            throwRequest(userInfo.uid, item.item.uid, userInfo.myPhone, userInfo.name, userInfo.token)
+            throwRequest(userInfo.uid, item.item.uid, userInfo.myPhone, userInfo.name, userInfo.token, Platform.OS)
           )
         ) : (
             addRequest(item.item.token),
-            throwRequest(userInfo.uid, item.item.uid, userInfo.myPhone, userInfo.name, userInfo.token)
+            throwRequest(userInfo.uid, item.item.uid, userInfo.myPhone, userInfo.name, userInfo.token, Platform.OS)
       )
       
     }

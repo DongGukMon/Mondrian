@@ -9,38 +9,10 @@ import database from '@react-native-firebase/database'
 import firebaseInit from './utils/firebaseInit';
 import { NavigationContainer} from '@react-navigation/native';
 import {profileUpdate} from "./utils/firebaseCall"
-import PushNotification from "react-native-push-notification";
 import messaging from '@react-native-firebase/messaging';
-import {getEnabled,getLoginChecker,pushCustom} from './utils/localStorage'
+import {getEnabled,pushCustom} from './utils/localStorage'
 import SplashScreen from 'react-native-splash-screen'
 
-PushNotification.createChannel(
-  {
-    channelId: "channel-id", // (required)
-    channelName: "My channel", // (required)
-   
-  },
-  (created) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
-);
-
-messaging().setBackgroundMessageHandler(async (remoteMessage:any) => {
-
-  var isEnabled = await getEnabled()
-  var loginChecker = await getLoginChecker()
-  if((isEnabled=="true")&&(loginChecker=="true")){
-    PushNotification.localNotification({
-      channelId:"channel-id",
-      title:Platform.OS==="android" ?remoteMessage.data?.pushTitle : remoteMessage.data?.title,
-      subtitle:remoteMessage.data?.pushTitle,
-      color:'#CE85F8',
-      smallIcon: "ic_notification",
-      message:remoteMessage.data?.body,
-      picture:Platform.OS==='ios' && remoteMessage.data.imageUrl,
-      largeIconUrl:remoteMessage.data.imageUrl,
-      data:remoteMessage.data
-    })
-  }
-});
 
 async function requestUserPermission() {
   const authStatus = await messaging().requestPermission();
@@ -52,6 +24,7 @@ async function requestUserPermission() {
     console.log('Authorization status:', authStatus);
   }
 }
+
 
 
 AppRegistry.registerComponent('app', () => App);
@@ -76,7 +49,7 @@ const App = () => {
   const checkIfLoggedIn = () => {
     auth().onAuthStateChanged(
       function(result) {
-        result && (profileUpdate(result), checkName(result), setInfo({...info,uid:result.uid}),getToken(result.uid))
+        result && (profileUpdate(result,Platform.OS), checkName(result), setInfo({...info,uid:result.uid}),getToken(result.uid))
         setIsLogin(result)
         }
     )
@@ -87,13 +60,10 @@ const App = () => {
     database().ref('users/'+uid).update({token:token})
   };
 
-
-
   useEffect(() => {
     checkIfLoggedIn()
     requestUserPermission()
     getEnabled()
-    getLoginChecker()
     pushCustom()
   },[])
 

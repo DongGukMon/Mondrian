@@ -7,7 +7,7 @@ import {StackContext} from '../utils/StackContext';
 import { AnimatedFlatList, AnimationType } from 'flatlist-intro-animations';
 import { useHeaderHeight } from '@react-navigation/elements';
 import {sayYes,sayNo} from '../utils/firebaseCall'
-import {acceptRequest} from '../utils/notification'
+import {acceptRequestAndroid,acceptRequestIos} from '../utils/notification'
 firebaseInit()
 
 const screenWidth= Dimensions.get('screen').width
@@ -25,9 +25,17 @@ const FriendReq = () => {
   const rend_item =(item:any)=>{
 
     const pushItem =(text:string)=> {
+
+      //받는 친구의 ios와 android 구분해서 fcm payload 변경
+      const acceptRequest = item.item.os === 'android' ? acceptRequestAndroid : acceptRequestIos
+      console.log(item.item.os)
+
       return (Platform.OS === 'android' ?
       
-        <TouchableNativeFeedback onPress={()=>{text==='수락'?(sayYes(userInfo.uid,item.item.uid,userInfo.myPhone,item.item.phone_number), acceptRequest(item.item.token,userInfo.name)):sayNo(userInfo.uid,item.item.uid)}}
+        <TouchableNativeFeedback onPress={()=>{
+          text==='수락' ? (sayYes(userInfo.uid,item.item.uid,userInfo.myPhone,item.item.phone_number), acceptRequest(item.item.token,userInfo.name)) : sayNo(userInfo.uid,item.item.uid)
+        }}
+          
           background={TouchableNativeFeedback.Ripple('#00000040', false)} useForeground={true}>
           <View style={{...styles.buttonStyle, overflow: 'hidden', width:screenWidth*0.16, height:50, marginLeft:text==="수락" ? 0 : 10}}>
               <Text style={styles.itemTextStyle}>{text}</Text>

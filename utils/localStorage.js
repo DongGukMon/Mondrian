@@ -31,27 +31,27 @@ export const getEnabled = async () => {
   }
 }
 
-export const getLoginChecker = async () => {
-  try {
-    const value = await AsyncStorage.getItem('loginChecker')
-    if(value == null) {
-      setLoginChecker("true")
-      return "true"
-    }
-    return value
-  } catch(e) {
-    console.log(e)
-  }
-}
+// export const getLoginChecker = async () => {
+//   try {
+//     const value = await AsyncStorage.getItem('loginChecker')
+//     if(value == null) {
+//       setLoginChecker("true")
+//       return "true"
+//     }
+//     return value
+//   } catch(e) {
+//     console.log(e)
+//   }
+// }
 
-export const setLoginChecker = async (value) => {
-  try {
-    await AsyncStorage.setItem('loginChecker', value)
+// export const setLoginChecker = async (value) => {
+//   try {
+//     await AsyncStorage.setItem('loginChecker', value)
   
-  } catch (e) {
-    console.log(e)
-  }
-}
+//   } catch (e) {
+//     console.log(e)
+//   }
+// }
 
 
 // {uid:{time:~~~,count:~~~}}

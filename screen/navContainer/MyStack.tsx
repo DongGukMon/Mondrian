@@ -14,7 +14,7 @@ import Contacts from 'react-native-contacts';
 import PushNotification from "react-native-push-notification";
 import { useNavigation } from '@react-navigation/core';
 import messaging from '@react-native-firebase/messaging';
-import { getEnabled, getLoginChecker } from '../../utils/localStorage';
+import { getEnabled } from '../../utils/localStorage';
 
 const screenHeight= Dimensions.get('screen').height
 
@@ -23,26 +23,6 @@ const Stack = createStackNavigator();
 interface Iprops{
   info:any
 }
-
-// messaging().setBackgroundMessageHandler(async (remoteMessage:any) => {
-
-//   var isEnabled = await getEnabled()
-//   var loginChecker = await getLoginChecker()
-//   if((isEnabled=="true")&&(loginChecker=="true")){
-//     PushNotification.localNotification({
-//       channelId:"channel-id",
-//       title:Platform.OS==="android" ?remoteMessage.data?.pushTitle : remoteMessage.data?.title,
-//       subtitle:remoteMessage.data?.pushTitle,
-//       color:'#CE85F8',
-//       smallIcon: "ic_notification",
-//       message:remoteMessage.data?.body,
-//       picture:Platform.OS==='ios' && remoteMessage.data.imageUrl,
-//       largeIconUrl:remoteMessage.data.imageUrl,
-//       data:remoteMessage.data
-//     })
-//   }
-// });
-
 
 export default function MyStack(props:Iprops) {
 
@@ -163,15 +143,12 @@ export default function MyStack(props:Iprops) {
     // });
     
     const unsubscribe = messaging().onMessage(async (remoteMessage:any) => {
-      console.log(remoteMessage.data)
 
       var isEnabled = await getEnabled()
-      var loginChecker = await getLoginChecker()
       
       remoteMessage.data.type=="FriendReq" ?
       (navigationAlert(remoteMessage.data.type)) :
-      ((isEnabled=="true")&&(loginChecker=="true")&&
-        PushNotification.localNotification({
+      (isEnabled=="true")&& PushNotification.localNotification({
           channelId:"channel-id",
           title:Platform.OS==="android" ?remoteMessage.data?.pushTitle : remoteMessage.data?.title,
           subtitle:remoteMessage.data?.pushTitle,
@@ -181,7 +158,7 @@ export default function MyStack(props:Iprops) {
           picture:Platform.OS==='ios' && remoteMessage.data.imageUrl,
           largeIconUrl:remoteMessage.data.imageUrl,
           data:remoteMessage.data
-        }))
+        })
        
     });
 

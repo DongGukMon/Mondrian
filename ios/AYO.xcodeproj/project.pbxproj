@@ -38,6 +38,7 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = AYO/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = AYO/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = AYO/main.m; sourceTree = "<group>"; };
+		1518B09F277EE85E00AD1E14 /* AYORelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = AYORelease.entitlements; path = AYO/AYORelease.entitlements; sourceTree = "<group>"; };
 		15A785F6275A743B00EB587A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		15FDAA1E27591203001D9B09 /* AYO.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = AYO.entitlements; path = AYO/AYO.entitlements; sourceTree = "<group>"; };
 		6C9665823239FEBE412102CC /* libPods-AYO-AYOTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-AYO-AYOTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -89,6 +90,7 @@
 		13B07FAE1A68108700A75B9A /* AYO */ = {
 			isa = PBXGroup;
 			children = (
+				1518B09F277EE85E00AD1E14 /* AYORelease.entitlements */,
 				15FDAA1E27591203001D9B09 /* AYO.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -507,7 +509,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = AYO/AYO.entitlements;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = 7P6594JX3Y;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = AYO/Info.plist;
@@ -536,8 +538,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = AYO/AYO.entitlements;
-				CURRENT_PROJECT_VERSION = 7;
+				CODE_SIGN_ENTITLEMENTS = AYO/AYORelease.entitlements;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = 7P6594JX3Y;
 				INFOPLIST_FILE = AYO/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

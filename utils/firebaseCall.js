@@ -2,11 +2,8 @@ import React,{useContext} from 'react';
 
 import database, { FirebaseDatabaseTypes } from '@react-native-firebase/database';
 import firebaseInit from './firebaseInit';
-// import {UserInfoContext} from './UserInfoContext';
 
 firebaseInit()
-
-// const [userInfo, setUserInfo] = useContext(UserInfoContext);
 
 
 export async function sayYes(myUid,friendUid, myPhone, friendPhone) {
@@ -41,7 +38,7 @@ export async function deleteFriend(myUid,friendUid){
   database().ref('friend_list/'+friendUid+'/'+myUid).remove()
 }
 
-export async function throwRequest(myUid,friendUid,myPhone,myName,token) {
+export async function throwRequest(myUid,friendUid,myPhone,myName,token,OS) {
   database()
     .ref('request_list/receive/'+friendUid)
     .update({
@@ -49,7 +46,8 @@ export async function throwRequest(myUid,friendUid,myPhone,myName,token) {
         phone_number:myPhone,
         uid:myUid,
         name:myName,
-        token:token
+        token:token,
+        os:OS
       }
     });
 
@@ -78,23 +76,32 @@ export async function setName(name, uid) {
     });
 }
 
-export async function profileUpdate(result) {
+export async function profileUpdate(result,OS) {
   database()
     .ref('users/' + result.uid)
     .update({
       last_logged_in: result.metadata.lastSignInTime,
+      os:OS
     });
 }
 
-export async function profileCreate(result) {
+export async function profileCreate(result,OS) {
   database()
     .ref('users/' + result.user.uid)
     .update({
       created_at:result.user.metadata.creationTime,
       uid:result.user.uid,
-      phone_number:"010"+(result.user.phoneNumber).substring(5,13)
+      phone_number:"010"+(result.user.phoneNumber).substring(5,13),
+      os:OS
     });
 }
+
+export async function whenLogedOut(uid){
+  database()
+  .ref('users/' + uid +'/token')
+  .remove()
+}
+
 
 export async function deleteAccount(uid) {
   database()

@@ -1,6 +1,6 @@
 
 import React,{useState,useEffect} from 'react';
-import {SafeAreaView, StyleSheet, Text, Button, ImageBackground,View, Dimensions,TextInput, Alert,Image,TouchableOpacity } from 'react-native';
+import {SafeAreaView, StyleSheet, Text, Button, ImageBackground,View, Dimensions,TextInput, Alert,Image,TouchableOpacity, Platform } from 'react-native';
 import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
 import firebaseInit from "../utils/firebaseInit";
@@ -51,7 +51,7 @@ const Signin = () => {
   async function confirmCode() {
     try {
       await confirm.confirm(code).then((result:any)=>{
-        result.additionalUserInfo.isNewUser && (profileCreate(result))
+        result.additionalUserInfo.isNewUser && (profileCreate(result,Platform.OS))
       });
     } catch (error) {
       Alert.alert("잘못된 코드입니다. 다시 입력해주세요.")
@@ -83,7 +83,7 @@ const Signin = () => {
           <View style={{height:h*0.045}}/>
           <View style={{height:h*0.085,width:w*0.8, justifyContent:'space-between'}}>
             
-            <Text style={{fontSize:18,color:'black', fontWeight:'bold',marginLeft:5,marginBottom:5}}>Verify Code from SMS</Text>
+            <Text style={{fontSize:18,color:'black', fontWeight:'bold',marginLeft:5,marginBottom:5}}>Verification Code from SMS</Text>
             <View style={{flexDirection:'row', justifyContent:'center'}}>
               <TextInput placeholder='6-digit Code' style={{textAlign:'center', borderWidth:3, borderRadius:10, width:w*0.8,height:45, backgroundColor:'#FDEC94', fontSize:18}} value={code} onChangeText={text => setCode(text)} />
             </View>

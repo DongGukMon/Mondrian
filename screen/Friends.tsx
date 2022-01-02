@@ -83,7 +83,7 @@ const Friends = ({navigation}:any) => {
   return (
     <SafeAreaView style={{flex:1, backgroundColor:'white'}}>
       <ImageBackground style={{flex:1}} source={Object.values<any>(friendList).length!==0 ? require('../assets/background/background5.png') : require('../assets/background/background4.png')}>
-      <View style={{flex:1, marginTop:10}}>
+      <View style={{flex:1}}>
         {Object.values<any>(friendList).length!==0 ?  
           <AnimatedFlatList
             data={Object.values<any>(friendList)}

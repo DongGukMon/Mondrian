@@ -18,7 +18,7 @@ import {
   TouchableWithoutFeedbackBase
 } from 'react-native';
 import { StackContext } from '../utils/StackContext';
-import { goPush } from '../utils/notification';
+import { goPushAndroid,goPushIos } from '../utils/notification';
 import {setPushCounter,removeValue, pushCustom, setPushCustom} from '../utils/localStorage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FlatList } from 'react-native-gesture-handler';
@@ -64,6 +64,8 @@ const PushScreen = () => {
   const [pushList, setPushList] = useState<any>(null)
   const [editData, setEditData] =useState<any>({title:'',body:'',icon:''})
 
+  const isFriendOSAndroid = selectedFriend.os === 'android'
+
   const getPushList = async ()=>{
     const checkLength = await pushCustom()
     if ((checkLength.length < 6) &&(checkLength[checkLength.length-1].checker == null)){
@@ -91,7 +93,7 @@ const PushScreen = () => {
           //40초 후 초기화 setTimeout
           setTimeout(()=>{setIsDisabled(false),removeValue(selectedFriend.uid)},40*1000)
           //푸시 보내기
-          goPush(selectedFriend.token,userInfo.name,item)
+          isFriendOSAndroid ? goPushAndroid(selectedFriend.token,userInfo.name,item) : goPushIos(selectedFriend.token,userInfo.name,item)
           //storage에 등록
           setPushCounter(selectedFriend.uid,0)
         } 
@@ -100,10 +102,10 @@ const PushScreen = () => {
             setIsDisabled(true)
             Alert.alert("40초 동안 최대 10번 보낼 수 있습니다.")
         } 
-        // 40초가 지나지 않았지만 10번을 넘기지 않았을 경우
+        // 40초를 지나지 않았고 10번을 넘기지 않았을 경우
         else{
-            goPush(selectedFriend.token,userInfo.name,item)
-            setPushCounter(selectedFriend.uid,JSON.parse(value).count,JSON.parse(value).time)
+          isFriendOSAndroid ? goPushAndroid(selectedFriend.token,userInfo.name,item) : goPushIos(selectedFriend.token,userInfo.name,item)
+          setPushCounter(selectedFriend.uid,JSON.parse(value).count,JSON.parse(value).time)
         }
     
       } catch(e) {
