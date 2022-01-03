@@ -78,7 +78,7 @@ const App = () => {
       <SafeAreaView style={{flex:1}}>
         {isLogin? 
           hasName ? 
-            <ToastProvider offsetBottom={40} successColor="#CE85F8">
+            <ToastProvider offsetBottom={40} successColor="#CE85F8" normalColor='#ABDECB'>
               <MyStack info={info}/>
             </ToastProvider> : <InputProfile info={info}/>
           : <Signin/>

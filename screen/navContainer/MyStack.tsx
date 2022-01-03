@@ -35,6 +35,8 @@ export default function MyStack(props:Iprops) {
   
   const [contactsPermission,setContactsPermission] = useState<boolean>(false)
 
+  const [addFriendWithUidModalVisible,setAddFriendWithUidModalVisible] = useState(false)
+
   const [isRefreshing,setIsRefreshing] = useState(false)
 
   //푸시 스크린에 버튼 disable 설정 스테이트 (10회/40초 발송 제한)
@@ -168,7 +170,7 @@ export default function MyStack(props:Iprops) {
 
 
   return (
-    <StackContext.Provider value={{isDisabled,setIsDisabled,contactsPermission,getFriends,getRequest,isRefreshing,setIsRefreshing, myContacts,setMyContacts,addList,setAddList,userInfo,setUserInfo,requestList,setRequestList,friendList,setFriendList,selectedFriend,setSelectedFriend}}>
+    <StackContext.Provider value={{addFriendWithUidModalVisible,setAddFriendWithUidModalVisible,isDisabled,setIsDisabled,contactsPermission,getFriends,getRequest,isRefreshing,setIsRefreshing, myContacts,setMyContacts,addList,setAddList,userInfo,setUserInfo,requestList,setRequestList,friendList,setFriendList,selectedFriend,setSelectedFriend}}>
       <Stack.Navigator>
         <Stack.Screen name="Friends" component={Friends} options={({navigation})=>({headerTitleAlign: 'left',headerTitleStyle:{fontSize:24, fontWeight:'bold'}, headerStyle:{backgroundColor:'#E9BCBE', height:screenHeight*0.1, borderBottomWidth:2, borderBottomColor:'black'} , headerRight: ()=>{
           return <View style={{flexDirection:'row', justifyContent:'space-between', width:130, padding:10, backgroundColor:'white', borderRadius:20, marginRight:10}}>
@@ -187,7 +189,12 @@ export default function MyStack(props:Iprops) {
         })}
         />
         <Stack.Screen name="PushScreen" component={PushScreen} options={{headerTintColor:'black',headerBackTitleVisible:false, title:selectedFriend ? "To. "+selectedFriend.name : "", headerTitleAlign: 'center', headerTitleStyle:{fontSize:20, fontWeight:'bold'}, headerStyle:{backgroundColor:'#CE85F8', height:screenHeight*0.1, borderBottomWidth:2, borderBottomColor:'black'}}}/>
-        <Stack.Screen name="AddFriend" component={AddFriend} options={{headerTintColor:'black', headerBackTitleVisible:false, title:'Add Friends',headerTitleAlign: 'center',headerTitleStyle:{fontSize:20, fontWeight:'bold'}, headerStyle:{backgroundColor:'#ABDECB', height:screenHeight*0.1, borderBottomWidth:2, borderBottomColor:'black'}}}/>
+        <Stack.Screen name="AddFriend" component={AddFriend} options={{headerTintColor:'black', headerBackTitleVisible:false, title:'Add Friends',headerTitleAlign: 'center',headerTitleStyle:{fontSize:20, fontWeight:'bold'}, headerStyle:{backgroundColor:'#ABDECB', height:screenHeight*0.1, borderBottomWidth:2, borderBottomColor:'black'}, headerRight: ()=>{
+          return <TouchableOpacity style={{marginRight:20,borderRadius:15, height:40,width:40, justifyContent:'center', alignItems:'center'}} onPress={()=>{setAddFriendWithUidModalVisible(true)}}>
+                  <Icon name="duplicate-outline" size={27} color="black" />
+              </TouchableOpacity>
+          }
+        }}/>
         <Stack.Screen name="Settings" component={Settings} options={{headerTintColor:'black', headerBackTitleVisible:false, title:"Settings",headerTitleAlign: 'center',headerTitleStyle:{fontSize:20, fontWeight:'bold'}, headerStyle:{backgroundColor:'#CE85F8', height:screenHeight*0.1, borderBottomWidth:2, borderBottomColor:'black'} ,}}/>
         <Stack.Screen name="FriendReq" component={FriendReq} options={{headerTintColor:'black', headerBackTitleVisible:false, title:"Request List",headerTitleAlign: 'center',headerTitleStyle:{fontSize:20, fontWeight:'bold'}, headerStyle:{backgroundColor:'#FDEC94', height:screenHeight*0.1, borderBottomWidth:2, borderBottomColor:'black'} ,}}/>
       </Stack.Navigator>
