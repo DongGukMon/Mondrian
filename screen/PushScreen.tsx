@@ -12,16 +12,17 @@ import {
   ImageBackground,
   Image,
   Modal,
-  Button,
   TextInput,
   TouchableWithoutFeedback,
-  TouchableWithoutFeedbackBase
+  FlatList
 } from 'react-native';
 import { StackContext } from '../utils/StackContext';
 import { goPushAndroid,goPushIos } from '../utils/notification';
 import {setPushCounter,removeValue, pushCustom, setPushCustom} from '../utils/localStorage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { FlatList } from 'react-native-gesture-handler';
+// import { FlatList } from 'react-native-gesture-handler';
+
+import { useToast } from "react-native-toast-notifications";
 
 const screenWidth= Dimensions.get('screen').width
 const screenHeight= Dimensions.get('screen').height > 800 ?  Dimensions.get('screen').height : 800
@@ -66,6 +67,8 @@ const PushScreen = () => {
 
   const isFriendOSAndroid = selectedFriend.os === 'android'
 
+  const toast = useToast();
+
   const getPushList = async ()=>{
     const checkLength = await pushCustom()
     if ((checkLength.length < 6) &&(checkLength[checkLength.length-1].checker == null)){
@@ -94,6 +97,13 @@ const PushScreen = () => {
           setTimeout(()=>{setIsDisabled(false),removeValue(selectedFriend.uid)},40*1000)
           //푸시 보내기
           isFriendOSAndroid ? goPushAndroid(selectedFriend.token,userInfo.name,item) : goPushIos(selectedFriend.token,userInfo.name,item)
+          //전송완료 toast message
+          toast.show("전송 완료! (1/10)", {
+            type: "success",
+            placement: "bottom",
+            duration: 2000,
+            animationType: "zoom-in",
+          });
           //storage에 등록
           setPushCounter(selectedFriend.uid,0)
         } 
@@ -105,6 +115,13 @@ const PushScreen = () => {
         // 40초를 지나지 않았고 10번을 넘기지 않았을 경우
         else{
           isFriendOSAndroid ? goPushAndroid(selectedFriend.token,userInfo.name,item) : goPushIos(selectedFriend.token,userInfo.name,item)
+           //전송완료 toast message
+          toast.show(`전송 완료! (${JSON.parse(value).count+1}/10)`, {
+            type: "success",
+            placement: "bottom",
+            duration: 2000,
+            animationType: "zoom-in",
+          });
           setPushCounter(selectedFriend.uid,JSON.parse(value).count,JSON.parse(value).time)
         }
     

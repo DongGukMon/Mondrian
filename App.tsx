@@ -13,6 +13,7 @@ import messaging from '@react-native-firebase/messaging';
 import {getEnabled,pushCustom} from './utils/localStorage'
 import SplashScreen from 'react-native-splash-screen'
 
+import { ToastProvider } from 'react-native-toast-notifications'
 
 async function requestUserPermission() {
   const authStatus = await messaging().requestPermission();
@@ -77,7 +78,9 @@ const App = () => {
       <SafeAreaView style={{flex:1}}>
         {isLogin? 
           hasName ? 
-          <MyStack info={info}/> : <InputProfile info={info}/>
+            <ToastProvider offsetBottom={40} successColor="#CE85F8">
+              <MyStack info={info}/>
+            </ToastProvider> : <InputProfile info={info}/>
           : <Signin/>
         }
       </SafeAreaView>
