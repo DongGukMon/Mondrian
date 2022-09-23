@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "594993990605-mfrppvljp4nbal3unlvphq6j2hisp3f1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fleeo.mondrian",
+            "certificate_hash": "64ce02cfe80470566690f15fb8208b4620d7b6b8"
+          }
+        },
+        {
+          "client_id": "594993990605-p95vhvne77r2oce3a9jcpfe63aedl42u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fleeo.mondrian",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
           "client_id": "594993990605-rull88i4fmre1b4ar120i815lo8fijom.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -32,10 +48,62 @@
               "client_type": 3
             },
             {
-              "client_id": "594993990605-e1p4k1e7bkir57i4fjtqio7ngt76pmvb.apps.googleusercontent.com",
+              "client_id": "594993990605-7i5p23261em8gasdek12so8egjkijli3.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.fleeo.mondrian"
+                "bundle_id": "org.reactjs.native.example.AYO"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:594993990605:android:aa38b788012009a9349284",
+        "android_client_info": {
+          "package_name": "com.fleeo.mondrian"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "594993990605-fppcg7fqsajuhkp2bom1fjak735ue7um.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fleeo.mondrian",
+            "certificate_hash": "dfdea4e98b8c56ddaa481f9a4d8ce65a6c0aa383"
+          }
+        },
+        {
+          "client_id": "594993990605-jm4p4fua9c3bnuh368d2cu6t3apsgr95.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fleeo.mondrian",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "594993990605-rull88i4fmre1b4ar120i815lo8fijom.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNKmC79XIgMS-WVXWC5Xvf19n6pl48m94"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "594993990605-rull88i4fmre1b4ar120i815lo8fijom.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "594993990605-7i5p23261em8gasdek12so8egjkijli3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.reactjs.native.example.AYO"
               }
             }
           ]

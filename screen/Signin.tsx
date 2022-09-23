@@ -5,6 +5,7 @@ import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-goo
 import auth from '@react-native-firebase/auth';
 import firebaseInit from "../utils/firebaseInit";
 import { profileCreate } from '../utils/firebaseCall';
+import database from '@react-native-firebase/database';
 
 firebaseInit()
 
@@ -44,8 +45,14 @@ const Signin = () => {
   // Handle the button press
   
   async function signInWithPhoneNumber(phoneNumber:string) {
+    try{
     const confirmation:any = await auth().signInWithPhoneNumber(phoneNumber);
     setConfirm(confirmation);
+  } catch(error:any){
+    database().ref("error/android").update({
+      "body":error
+    })
+  }
   }
 
   async function confirmCode() {
@@ -107,7 +114,7 @@ const Signin = () => {
                 <View style={{justifyContent:'center', borderWidth:3, borderRadius:10, marginRight:5, width:w*0.18, height:45, backgroundColor:'#FDEC94'}}>
                   <Text style={{textAlign:'center', color:'black', fontWeight:'bold', fontSize:18}}>010</Text>
                 </View>
-                <TextInput placeholder='0000-0000' style={{textAlign:'center', borderWidth:3, borderRadius:10, width:w*0.6,height:45, backgroundColor:'#FDEC94', fontSize:18}} value={verifyingNumber} onChangeText={text => setVerifyingNumber(text)} />
+                <TextInput placeholder='"-"을 제외한 8자리' style={{textAlign:'center', borderWidth:3, borderRadius:10, width:w*0.6,height:45, backgroundColor:'#FDEC94', fontSize:18}} value={verifyingNumber} onChangeText={text => setVerifyingNumber(text)} />
               </View>
             </View>
             <View style={{height:h*0.03}}/>

@@ -63,7 +63,7 @@ export default function MyStack(props:Iprops) {
   }
 
   const getFriends = () => {
-    
+    setMyContacts({})
     Contacts.getAll()
       .then((contacts) => {
         contacts.map((item)=>{

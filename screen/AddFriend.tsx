@@ -168,7 +168,7 @@ const AddFriend = () => {
   const requestWithId = () =>{
     database().ref('users/'+uidText).once('value',snapshot=>{
       
-      snapshot.val() && snapshot.val().uid!==userInfo.uid ? (
+      Object.values(snapshot.val()).length!==0 && snapshot.val().uid!==userInfo.uid ? (
         pressAction(snapshot.val().uid, snapshot.val().os, snapshot.val().token, true),
         setUidText("")
         ) : Alert.alert("잘못된 ID입니다.")
