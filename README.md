@@ -7,13 +7,10 @@
 **Mondrian**은 친한 친구사이에 간단하게 용건을 전달해야하는 상황을 타겟팅한 메신저 서비스입니다. 메시지를 보낼 친구를 선택하고 버튼을 누르면 버튼에 미리 등록된 메시지가 친구에게 푸시메시지 형태로 전송됩니다. 자주 보내는 메시지를 미리 등록해두고 상황에 따라 즉시 푸시를 날릴 수 있습니다. **Mondrian**은 자주 연락하는 친구에게 자주 꺼내는 주제를 던질 때 가장 경제적인 선택지가 될 수 있습니다.
  
 ## 기술 스택
-### Front-end
 - react-native CLI
 - typescript
 - context API
 - FCM
-
-### Back-end
 - firebase realtime database
 
 ## 구현 기능
